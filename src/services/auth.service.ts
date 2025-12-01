@@ -41,7 +41,6 @@ export class AuthService {
     if (type === "org") {
       const org = await prisma.org.create({
         data: {
-          name,
           domEmail: email,
           pwd: hashed,
           roleId: role.id,

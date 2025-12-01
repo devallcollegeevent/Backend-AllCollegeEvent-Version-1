@@ -39,22 +39,21 @@ model User {
 
   crAt DateTime @default(now())
 
-  otps OTP[] // <-- ADD THIS LINE
+  otps OTP[] 
 }
 
 model Org {
   id    Int    @id @default(autoincrement())
   idnty String @unique @default(uuid())
 
-  name     String
   domEmail String @unique
   pwd      String
 
   org_name String
   org_cat  String
-  city     String?
-  state    String?
-  country  String?
+  city     String
+  state    String
+  country  String
   pImg     String?
   whatsapp String?
   insta    String?
