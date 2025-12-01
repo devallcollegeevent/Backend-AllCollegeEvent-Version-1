@@ -8,7 +8,7 @@ const sendVerificationMail = async (org: any) => {
 
   const token = generateToken(org.idnty);
 
-  const verifyUrl = `${URL}?token=${token}`;
+  const verifyUrl = `${URL}user/?token=${token}`;
 
   const html = `
     <h2>Verify Your Organization Account</h2>
@@ -156,6 +156,88 @@ export class AuthService {
     return {
       success: true,
       message: "Account verified successfully",
+    };
+  }
+
+  static async forgotPassword(email: string) {
+    if (!email) throw new Error("Email is required");
+
+    let account = await prisma.user.findUnique({ where: { email } });
+
+    if (!account) {
+      account = await prisma.org.findUnique({
+        where: { domEmail: email },
+      });
+    }
+
+    if (!account) throw new Error("Email not found");
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    const expAt = new Date(Date.now() + 5 * 60 * 1000); // 5 min expiry
+
+    await prisma.oTP.create({
+      data: {
+        email,
+        code: otp,
+        purpose: "FORGOT_PASSWORD",
+        expAt,
+        userId: account.email ? account.id : null,
+        orgId: account.domEmail ? account.id : null,
+      },
+    });
+
+    await sendEmail({
+      to: email,
+      subject: "Your Password Reset OTP",
+      html: `
+        <h3>Your OTP for password reset is:</h3>
+        <h1>${otp}</h1>
+        <p>It will expire in 5 minutes.</p>
+      `,
+    });
+
+    return {
+      success: true,
+      message: "OTP sent to email",
+    };
+  }
+
+  static async verifyOtp(email: string, otp: string) {
+    const record = await prisma.oTP.findFirst({
+      where: { email, code: otp, purpose: "FORGOT_PASSWORD" },
+      orderBy: { id: "desc" },
+    });
+
+    if (!record) throw new Error("Invalid OTP");
+    if (record.expAt < new Date()) throw new Error("OTP expired");
+
+    return {
+      success: true,
+      message: "OTP verified successfully",
+    };
+  }
+
+  static async resetPassword(email: string, newPassword: string) {
+    const hashed = await hashPassword(newPassword);
+
+    let updatedUser = await prisma.user.updateMany({
+      where: { email },
+      data: { pwd: hashed },
+    });
+
+    if (updatedUser.count === 0) {
+      updatedUser = await prisma.org.updateMany({
+        where: { domEmail: email },
+        data: { pwd: hashed },
+      });
+    }
+
+    if (updatedUser.count === 0) throw new Error("Email not found");
+
+    return {
+      success: true,
+      message: "Password reset successful",
     };
   }
 }

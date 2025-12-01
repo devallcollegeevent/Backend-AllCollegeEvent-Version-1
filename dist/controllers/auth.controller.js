@@ -40,5 +40,35 @@ class AuthController {
             });
         }
     }
+    static async forgotPassword(req, res) {
+        try {
+            const { email } = req.body;
+            const result = await auth_service_1.AuthService.forgotPassword(email);
+            return res.status(200).json(result);
+        }
+        catch (err) {
+            return res.status(400).json({ success: false, message: err.message });
+        }
+    }
+    static async verifyOtp(req, res) {
+        try {
+            const { email, otp } = req.body;
+            const result = await auth_service_1.AuthService.verifyOtp(email, otp);
+            return res.status(200).json(result);
+        }
+        catch (err) {
+            return res.status(400).json({ success: false, message: err.message });
+        }
+    }
+    static async resetPassword(req, res) {
+        try {
+            const { email, password } = req.body;
+            const result = await auth_service_1.AuthService.resetPassword(email, password);
+            return res.status(200).json(result);
+        }
+        catch (err) {
+            return res.status(400).json({ success: false, message: err.message });
+        }
+    }
 }
 exports.AuthController = AuthController;
