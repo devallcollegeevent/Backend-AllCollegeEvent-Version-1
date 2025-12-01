@@ -9,12 +9,17 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:3000"],
+    credentials: true,
+  })
+);
 
 app.use("/api/auth", authRoutes);
 
-app.get("/", (req:any, res:any) => {
-    res.send("Backend running with CommonJS + Express + Prisma");
+app.get("/", (req: any, res: any) => {
+  res.send("Backend running with CommonJS + Express + Prisma");
 });
 
 const PORT = process.env.PORT;
