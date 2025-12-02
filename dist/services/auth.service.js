@@ -6,6 +6,7 @@ const hash_1 = require("../utils/hash");
 const jwt_1 = require("../utils/jwt");
 const mailer_1 = require("../utils/mailer");
 const google_auth_library_1 = require("google-auth-library");
+const sendOtp_1 = require("../utils/sendOtp");
 const sendVerificationMail = async (org) => {
     const URL = process.env.MAIL_SEND;
     const token = (0, jwt_1.generateToken)(org.idnty);
@@ -153,18 +154,50 @@ class AuthService {
                 orgId: account.domEmail ? account.id : null,
             },
         });
-        await (0, mailer_1.sendEmail)({
-            to: email,
-            subject: "Your Password Reset OTP",
-            html: `
-        <h3>Your OTP for password reset is:</h3>
-        <h1>${otp}</h1>
-        <p>It will expire in 5 minutes.</p>
-      `,
-        });
+        await (0, sendOtp_1.sendOtpEmail)(email, otp, 10);
         return {
             success: true,
             message: "OTP sent to email",
+        };
+    }
+    static async resendOtp(email) {
+        const user = await prisma.user.findUnique({ where: { email } });
+        const org = await prisma.org.findUnique({ where: { domEmail: email } });
+        if (!user && !org) {
+            throw new Error("Account not found");
+        }
+        const existingOtp = await prisma.oTP.findFirst({
+            where: { email },
+            orderBy: { crAt: "desc" },
+        });
+        const otp = Math.floor(1000 + Math.random() * 9000).toString();
+        const expAt = new Date(Date.now() + 10 * 60 * 1000);
+        if (existingOtp) {
+            await prisma.oTP.update({
+                where: { id: existingOtp.id },
+                data: {
+                    code: otp,
+                    expAt,
+                    crAt: new Date(),
+                },
+            });
+        }
+        else {
+            await prisma.oTP.create({
+                data: {
+                    email,
+                    code: otp,
+                    expAt,
+                    crAt: new Date(),
+                    userId: user ? user.id : null,
+                    orgId: org ? org.id : null,
+                },
+            });
+        }
+        await (0, sendOtp_1.sendOtpEmail)(email, otp, 10);
+        return {
+            success: true,
+            message: "OTP resent successfully",
         };
     }
     static async verifyOtp(email, otp) {

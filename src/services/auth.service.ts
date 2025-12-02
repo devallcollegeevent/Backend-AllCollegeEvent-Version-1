@@ -3,6 +3,7 @@ import { hashPassword, comparePassword } from "../utils/hash";
 import { generateToken, verifyToken } from "../utils/jwt";
 import { sendEmail } from "../utils/mailer";
 import { OAuth2Client } from "google-auth-library";
+import { sendOtpEmail } from "../utils/sendOtp";
 
 const sendVerificationMail = async (org: any) => {
   const URL = process.env.MAIL_SEND;
@@ -187,19 +188,57 @@ export class AuthService {
       },
     });
 
-    await sendEmail({
-      to: email,
-      subject: "Your Password Reset OTP",
-      html: `
-        <h3>Your OTP for password reset is:</h3>
-        <h1>${otp}</h1>
-        <p>It will expire in 5 minutes.</p>
-      `,
-    });
+    await sendOtpEmail(email, otp, 10);
 
     return {
       success: true,
       message: "OTP sent to email",
+    };
+  }
+
+  static async resendOtp(email: string) {
+    const user = await prisma.user.findUnique({ where: { email } });
+    const org = await prisma.org.findUnique({ where: { domEmail: email } });
+
+    if (!user && !org) {
+      throw new Error("Account not found");
+    }
+
+    const existingOtp = await prisma.oTP.findFirst({
+      where: { email },
+      orderBy: { crAt: "desc" },
+    });
+
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+    const expAt = new Date(Date.now() + 10 * 60 * 1000);
+
+    if (existingOtp) {
+      await prisma.oTP.update({
+        where: { id: existingOtp.id },
+        data: {
+          code: otp,
+          expAt,
+          crAt: new Date(),
+        },
+      });
+    } else {
+      await prisma.oTP.create({
+        data: {
+          email,
+          code: otp,
+          expAt,
+          crAt: new Date(),
+          userId: user ? user.id : null,
+          orgId: org ? org.id : null,
+        },
+      });
+    }
+
+    await sendOtpEmail(email, otp, 10);
+
+    return {
+      success: true,
+      message: "OTP resent successfully",
     };
   }
 
@@ -260,7 +299,7 @@ export class AuthService {
 
     if (!role) throw new Error("Default role 'user' not found");
 
-    const roleUUID = role.idnty; 
+    const roleUUID = role.idnty;
 
     let user = await prisma.user.findUnique({
       where: { email },
@@ -271,9 +310,9 @@ export class AuthService {
         data: {
           name: name || "Google User",
           email,
-          pwd: "", 
+          pwd: "",
           pImg: picture || null,
-          roleId: role.id, 
+          roleId: role.id,
         },
       });
     }
@@ -283,7 +322,7 @@ export class AuthService {
       idnty: user.idnty,
       email: email,
       roleId: roleUUID,
-      type: "user", 
+      type: "user",
     });
 
     return { user, token };

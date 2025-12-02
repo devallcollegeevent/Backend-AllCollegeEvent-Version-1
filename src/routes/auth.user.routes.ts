@@ -10,6 +10,7 @@ router.get("/org/verify", AuthController.verifyOrg);
 
 router.post("/forgot-password", AuthController.forgotPassword);
 router.post("/verify-otp", AuthController.verifyOtp);
+router.post("/resend-otp", AuthController.resendOtp);
 router.post("/reset-password", AuthController.resetPassword);
 
 router.post("/google-login",AuthController.googleLoginController)

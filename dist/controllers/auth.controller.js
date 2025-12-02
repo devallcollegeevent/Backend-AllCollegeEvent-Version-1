@@ -50,6 +50,16 @@ class AuthController {
             return res.status(400).json({ success: false, message: err.message });
         }
     }
+    static async resendOtp(req, res) {
+        try {
+            const { email } = req.body;
+            const result = await auth_service_1.AuthService.resendOtp(email);
+            return res.status(200).json(result);
+        }
+        catch (err) {
+            return res.status(400).json({ success: false, message: err.message });
+        }
+    }
     static async verifyOtp(req, res) {
         try {
             const { email, otp } = req.body;
