@@ -70,5 +70,35 @@ class AuthController {
             return res.status(400).json({ success: false, message: err.message });
         }
     }
+    static async googleLoginController(req, res, next) {
+        try {
+            const { googleToken } = req.body;
+            if (!googleToken) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Google token missing",
+                });
+            }
+            const { user, token } = await auth_service_1.AuthService.googleLogin(googleToken);
+            res.cookie("token", token, {
+                httpOnly: true,
+                secure: false,
+                sameSite: "lax",
+                path: "/",
+            });
+            return res.status(200).json({
+                success: true,
+                user,
+                token,
+            });
+        }
+        catch (err) {
+            console.error("Google Login Error:", err);
+            return res.status(500).json({
+                success: false,
+                message: err.message || "Google login failed",
+            });
+        }
+    }
 }
 exports.AuthController = AuthController;

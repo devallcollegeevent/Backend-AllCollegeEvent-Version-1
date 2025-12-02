@@ -2,6 +2,7 @@ const prisma = require("../config/db.config");
 import { hashPassword, comparePassword } from "../utils/hash";
 import { generateToken, verifyToken } from "../utils/jwt";
 import { sendEmail } from "../utils/mailer";
+import { OAuth2Client } from "google-auth-library";
 
 const sendVerificationMail = async (org: any) => {
   const URL = process.env.MAIL_SEND;
@@ -238,5 +239,53 @@ export class AuthService {
       success: true,
       message: "Password reset successful",
     };
+  }
+
+  static async googleLogin(googleToken: string) {
+    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+    const ticket = await client.verifyIdToken({
+      idToken: googleToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    if (!payload) throw new Error("Invalid Google token");
+
+    const { email, name, picture } = payload;
+
+    const role = await prisma.role.findFirst({
+      where: { name: "user" },
+    });
+
+    if (!role) throw new Error("Default role 'user' not found");
+
+    const roleUUID = role.idnty; 
+
+    let user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          name: name || "Google User",
+          email,
+          pwd: "", 
+          pImg: picture || null,
+          roleId: role.id, 
+        },
+      });
+    }
+
+    const token = generateToken({
+      id: user.id,
+      idnty: user.idnty,
+      email: email,
+      roleId: roleUUID,
+      type: "user", 
+    });
+
+    return { user, token };
   }
 }

@@ -1,6 +1,3 @@
-// import pkg from '@prisma/client';
-// const { PrismaClient } = pkg;
-// import { seedRoles } from "./seeds/role.seed.ts";
 const pkg = require("@prisma/client");
 const { PrismaClient } = pkg;
 const { seedRoles } = require("./seeds/role.seed.ts");

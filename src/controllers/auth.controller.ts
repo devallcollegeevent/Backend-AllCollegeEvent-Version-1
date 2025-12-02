@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { AuthService } from "../services/auth.service";
 
 export class AuthController {
@@ -77,6 +77,44 @@ export class AuthController {
       return res.status(200).json(result);
     } catch (err: any) {
       return res.status(400).json({ success: false, message: err.message });
+    }
+  }
+
+  static async googleLoginController(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { googleToken } = req.body;
+
+      if (!googleToken) {
+        return res.status(400).json({
+          success: false,
+          message: "Google token missing",
+        });
+      }
+
+      const { user, token } = await AuthService.googleLogin(googleToken);
+
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+        path: "/",
+      });
+
+      return res.status(200).json({
+        success: true,
+        user,
+        token,
+      });
+    } catch (err: any) {
+      console.error("Google Login Error:", err);
+      return res.status(500).json({
+        success: false,
+        message: err.message || "Google login failed",
+      });
     }
   }
 }

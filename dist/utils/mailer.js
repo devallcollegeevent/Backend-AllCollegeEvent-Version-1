@@ -8,7 +8,10 @@ const sendEmail = async ({ to, subject, html, }) => {
         auth: {
             user: process.env.SMTP_USER,
             pass: process.env.SMTP_PASS,
-        }
+        },
+        tls: {
+            rejectUnauthorized: false, // allow Gmail TLS certs
+        },
     });
     await transporter.sendMail({
         from: process.env.FROM_EMAIL,

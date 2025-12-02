@@ -5,6 +5,7 @@ const prisma = require("../config/db.config");
 const hash_1 = require("../utils/hash");
 const jwt_1 = require("../utils/jwt");
 const mailer_1 = require("../utils/mailer");
+const google_auth_library_1 = require("google-auth-library");
 const sendVerificationMail = async (org) => {
     const URL = process.env.MAIL_SEND;
     const token = (0, jwt_1.generateToken)(org.idnty);
@@ -140,8 +141,8 @@ class AuthService {
         }
         if (!account)
             throw new Error("Email not found");
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
-        const expAt = new Date(Date.now() + 5 * 60 * 1000); // 5 min expiry
+        const otp = Math.floor(1000 + Math.random() * 9000).toString();
+        const expAt = new Date(Date.now() + 10 * 60 * 1000);
         await prisma.oTP.create({
             data: {
                 email,
@@ -198,6 +199,45 @@ class AuthService {
             success: true,
             message: "Password reset successful",
         };
+    }
+    static async googleLogin(googleToken) {
+        const client = new google_auth_library_1.OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+        const ticket = await client.verifyIdToken({
+            idToken: googleToken,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        const payload = ticket.getPayload();
+        if (!payload)
+            throw new Error("Invalid Google token");
+        const { email, name, picture } = payload;
+        const role = await prisma.role.findFirst({
+            where: { name: "user" },
+        });
+        if (!role)
+            throw new Error("Default role 'user' not found");
+        const roleUUID = role.idnty;
+        let user = await prisma.user.findUnique({
+            where: { email },
+        });
+        if (!user) {
+            user = await prisma.user.create({
+                data: {
+                    name: name || "Google User",
+                    email,
+                    pwd: "",
+                    pImg: picture || null,
+                    roleId: role.id,
+                },
+            });
+        }
+        const token = (0, jwt_1.generateToken)({
+            id: user.id,
+            idnty: user.idnty,
+            email: email,
+            roleId: roleUUID,
+            type: "user",
+        });
+        return { user, token };
     }
 }
 exports.AuthService = AuthService;
