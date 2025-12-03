@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const authRoutes = require("./routes/auth.user.routes");
+const eventRoutes = require("./routes/event.routes")
 
 dotenv.config();
 
@@ -20,9 +21,10 @@ app.use(
 app.use(appLogger);
 
 app.use("/api/auth", authRoutes);
+app.use("/api/eve", eventRoutes)
 
 app.get("/", (req: any, res: any) => {
-  res.send("Backend running with CommonJS + Express + Prisma");
+  res.send("Backend running with CommonJS ");
 });
 
 const PORT = process.env.PORT;

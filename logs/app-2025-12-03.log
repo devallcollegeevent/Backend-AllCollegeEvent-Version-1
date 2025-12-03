@@ -1,0 +1,311 @@
+[2025-12-03 10:53:17] [INFO] → Incoming → POST /api/eve/create
+[2025-12-03 10:53:17] [ERROR] → Error → POST /api/eve/create | Message: Cannot destructure property 'event_title' of 'req.body' as it is undefined.
+[2025-12-03 10:54:25] [INFO] → Incoming → POST /api/eve/create
+[2025-12-03 10:54:25] [ERROR] → Error → POST /api/eve/create | Message: 
+Invalid `prisma.event.create()` invocation in
+D:\Siva\Backend-AllCollegeEvent-Version-1\src\services\event.service.ts:14:38
+
+  11   image: string,
+  12   venue: String
+  13 ) {
+→ 14   const event = await prisma.event.create({
+         data: {
+           title: "Demo",
+           description: "demo event",
+           banner_image: "image.jpg",
+           event_date: "03/12/2025",
+           event_time: "10:52",
+           venue: "TN",
+       +   slug: String
+         }
+       })
+
+Argument `slug` is missing.
+[2025-12-03 10:55:18] [INFO] → Incoming → POST /api/eve/create
+[2025-12-03 10:55:19] [ERROR] → Error → POST /api/eve/create | Message: 
+Invalid `prisma.event.create()` invocation in
+D:\Siva\Backend-AllCollegeEvent-Version-1\src\services\event.service.ts:14:38
+
+  11   image: string,
+  12   venue: String
+  13 ) {
+→ 14   const event = await prisma.event.create({
+         data: {
+           title: "Demo",
+           description: "demo event",
+           banner_image: "image.jpg",
+           event_date: "03/12/2025",
+           event_time: "10:52",
+           venue: "TN",
+       +   org: {
+       +     create: OrgCreateWithoutEventInput | OrgUncheckedCreateWithoutEventInput,
+       +     connectOrCreate: OrgCreateOrConnectWithoutEventInput,
+       +     connect: OrgWhereUniqueInput
+       +   }
+         }
+       })
+
+Argument `org` is missing.
+[2025-12-03 10:55:50] [INFO] → Incoming → POST /api/eve/create
+[2025-12-03 10:55:50] [ERROR] → Error → POST /api/eve/create | Message: 
+Invalid `prisma.event.create()` invocation in
+D:\Siva\Backend-AllCollegeEvent-Version-1\src\services\event.service.ts:14:38
+
+  11   image: string,
+  12   venue: String
+  13 ) {
+→ 14   const event = await prisma.event.create({
+         data: {
+           title: "Demo",
+           description: "demo event",
+           banner_image: "image.jpg",
+           event_date: "03/12/2025",
+           event_time: "10:52",
+           venue: "TN",
+       +   org: {
+       +     create: OrgCreateWithoutEventInput | OrgUncheckedCreateWithoutEventInput,
+       +     connectOrCreate: OrgCreateOrConnectWithoutEventInput,
+       +     connect: OrgWhereUniqueInput
+       +   }
+         }
+       })
+
+Argument `org` is missing.
+[2025-12-03 10:57:12] [INFO] → Incoming → POST /api/eve/create
+[2025-12-03 10:57:12] [ERROR] → Error → POST /api/eve/create | Message: 
+Invalid `prisma.event.create()` invocation in
+D:\Siva\Backend-AllCollegeEvent-Version-1\src\services\event.service.ts:14:38
+
+  11   image: string,
+  12   venue: String
+  13 ) {
+→ 14   const event = await prisma.event.create({
+         data: {
+           org_id: undefined,
+           title: "Demo",
+           description: "demo event",
+           banner_image: "image.jpg",
+           event_date: "03/12/2025",
+           event_time: "10:52",
+           venue: "TN",
+       +   org: {
+       +     create: OrgCreateWithoutEventInput | OrgUncheckedCreateWithoutEventInput,
+       +     connectOrCreate: OrgCreateOrConnectWithoutEventInput,
+       +     connect: OrgWhereUniqueInput
+       +   }
+         }
+       })
+
+Argument `org` is missing.
+[2025-12-03 10:58:10] [INFO] → Incoming → POST /api/eve/create
+[2025-12-03 10:58:10] [ERROR] → Error → POST /api/eve/create | Message: 
+Invalid `prisma.Event.create()` invocation in
+D:\Siva\Backend-AllCollegeEvent-Version-1\src\services\event.service.ts:14:38
+
+  11   image: string,
+  12   venue: String
+  13 ) {
+→ 14   const event = await prisma.Event.create({
+         data: {
+           org_id: undefined,
+           title: "Demo",
+           description: "demo event",
+           banner_image: "image.jpg",
+           event_date: "03/12/2025",
+           event_time: "10:52",
+           venue: "TN",
+       +   org: {
+       +     create: OrgCreateWithoutEventInput | OrgUncheckedCreateWithoutEventInput,
+       +     connectOrCreate: OrgCreateOrConnectWithoutEventInput,
+       +     connect: OrgWhereUniqueInput
+       +   }
+         }
+       })
+
+Argument `org` is missing.
+[2025-12-03 11:00:05] [INFO] → Incoming → POST /api/eve/create
+[2025-12-03 11:00:05] [ERROR] → Error → POST /api/eve/create | Message: 
+Invalid `prisma.event.create()` invocation in
+D:\Siva\Backend-AllCollegeEvent-Version-1\src\services\event.service.ts:14:36
+
+  11   image: string;
+  12   venue: string;
+  13 }) {
+→ 14   const event = await prisma.event.create({
+         data: {
+           org_id: undefined,
+           title: "Demo",
+           description: "demo event",
+           banner_image: "image.jpg",
+           event_date: "03/12/2025",
+           event_time: "10:52",
+           mode: "offline",
+           venue_name: "TN",
+       +   org: {
+       +     create: OrgCreateWithoutEventInput | OrgUncheckedCreateWithoutEventInput,
+       +     connectOrCreate: OrgCreateOrConnectWithoutEventInput,
+       +     connect: OrgWhereUniqueInput
+       +   }
+         }
+       })
+
+Argument `org` is missing.
+[2025-12-03 11:02:02] [INFO] → Incoming → POST /api/eve/create
+[2025-12-03 11:02:02] [ERROR] → Error → POST /api/eve/create | Message: 
+Invalid `prisma.event.create()` invocation in
+D:\Siva\Backend-AllCollegeEvent-Version-1\src\services\event.service.ts:14:38
+
+  11   image: string;
+  12   venue: string;
+  13 }) {
+→ 14   const event = await prisma.event.create({
+         data: {
+           org_id: undefined,
+           title: "Demo",
+           description: "demo event",
+           banner_image: "image.jpg",
+           event_date: "03/12/2025",
+           event_time: "10:52",
+           mode: "offline",
+           venue_name: "TN",
+           org: {
+             connect: {
+               id: undefined,
+       ?       idnty?: String,
+       ?       domEmail?: String,
+       ?       AND?: OrgWhereInput | OrgWhereInput[],
+       ?       OR?: OrgWhereInput[],
+       ?       NOT?: OrgWhereInput | OrgWhereInput[],
+       ?       pwd?: StringFilter | String,
+       ?       org_name?: StringFilter | String,
+       ?       org_cat?: StringFilter | String,
+       ?       city?: StringFilter | String,
+       ?       state?: StringFilter | String,
+       ?       country?: StringFilter | String,
+       ?       pImg?: StringNullableFilter | String | Null,
+       ?       whatsapp?: StringNullableFilter | String | Null,
+       ?       insta?: StringNullableFilter | String | Null,
+       ?       linkedIn?: StringNullableFilter | String | Null,
+       ?       evCnt?: IntFilter | Int,
+       ?       isDel?: BoolFilter | Boolean,
+       ?       isVerf?: BoolFilter | Boolean,
+       ?       roleId?: IntNullableFilter | Int | Null,
+       ?       crAt?: DateTimeFilter | DateTime,
+       ?       role?: RoleNullableRelationFilter | RoleWhereInput | Null,
+       ?       otps?: OTPListRelationFilter,
+       ?       Event?: EventListRelationFilter
+             }
+           }
+         }
+       })
+
+Argument `connect` of type OrgWhereUniqueInput needs at least one of `id`, `idnty` or `domEmail` arguments. Available options are marked with ?.
+[2025-12-03 11:02:36] [INFO] → Incoming → POST /api/eve/create
+[2025-12-03 11:02:36] [ERROR] → Error → POST /api/eve/create | Message: 
+Invalid `prisma.event.create()` invocation in
+D:\Siva\Backend-AllCollegeEvent-Version-1\src\services\event.service.ts:14:38
+
+  11   image: string;
+  12   venue: string;
+  13 }) {
+→ 14   const event = await prisma.event.create({
+         data: {
+           org_id: 1,
+           ~~~~~~
+           title: "Demo",
+           description: "demo event",
+           banner_image: "image.jpg",
+           event_date: "03/12/2025",
+           event_time: "10:52",
+           mode: "offline",
+           venue_name: "TN",
+           org: {
+             connect: {
+               id: 1
+             }
+           },
+       ?   slug?: String | Null,
+       ?   published_at?: DateTime | Null,
+       ?   created_at?: DateTime,
+       ?   updated_at?: DateTime,
+       ?   createdBy?: UserCreateNestedOneWithoutEventInput
+         }
+       })
+
+Unknown argument `org_id`. Did you mean `org`? Available options are marked with ?.
+[2025-12-03 11:04:58] [INFO] → Incoming → POST /api/eve/create
+[2025-12-03 11:04:58] [ERROR] → Error → POST /api/eve/create | Message: 
+Invalid `prisma.event.create()` invocation in
+D:\Siva\Backend-AllCollegeEvent-Version-1\src\services\event.service.ts:14:38
+
+  11   image: string;
+  12   venue: string;
+  13 }) {
+→ 14   const event = await prisma.event.create(
+Foreign key constraint violated: `Event_org_id_fkey (index)`
+[2025-12-03 11:07:30] [INFO] → Incoming → POST /api/eve/create
+[2025-12-03 11:07:31] [ERROR] → Error → POST /api/eve/create | Message: 
+Invalid `prisma.event.create()` invocation in
+D:\Siva\Backend-AllCollegeEvent-Version-1\src\services\event.service.ts:14:38
+
+  11   image: string;
+  12   venue: string;
+  13 }) {
+→ 14   const event = await prisma.event.create(
+Foreign key constraint violated: `Event_org_id_fkey (index)`
+[2025-12-03 11:11:06] [INFO] → Incoming → POST /api/eve/create
+[2025-12-03 12:56:36] [INFO] → Incoming → POST /api/eve/create
+[2025-12-03 13:00:30] [INFO] → Incoming → POST /api/eve/create
+[2025-12-03 13:01:35] [INFO] → Incoming → POST /api/eve/create
+[2025-12-03 13:02:30] [INFO] → Incoming → POST /api/eve/create
+[2025-12-03 13:06:29] [INFO] → Incoming → POST /api/eve/create
+[2025-12-03 13:56:43] [INFO] → Incoming → POST /api/eve/create
+[2025-12-03 13:56:54] [INFO] → Incoming → POST /api/eve/create
+[2025-12-03 13:57:41] [INFO] → Incoming → POST /api/eve/create
+[2025-12-03 13:57:41] [ERROR] → Error → POST /api/eve/create | Message: 
+Invalid `prisma.event.create()` invocation in
+D:\Siva\Backend-AllCollegeEvent-Version-1\dist\services\event.service.js:7:42
+
+  4 const prisma = require("../config/db.config");
+  5 class EventService {
+  6     static async createEventService(data) {
+→ 7         const event = await prisma.event.create({
+              data: {
+                org_id: "9",
+                        ~~~
+                title: "demo",
+                description: "demo test",
+                banner_image: undefined,
+                event_date: "03/12/2025",
+                event_time: "12:53",
+                mode: "offline",
+                venue_name: "TN"
+              }
+            })
+
+Argument `org_id`: Invalid value provided. Expected Int, provided String.
+[2025-12-03 14:04:23] [INFO] → Incoming → POST /api/eve/create
+[2025-12-03 14:04:23] [ERROR] → Error → POST /api/eve/create | Message: 
+Invalid `prisma.event.create()` invocation in
+D:\Siva\Backend-AllCollegeEvent-Version-1\dist\services\event.service.js:7:42
+
+  4 const prisma = require("../config/db.config");
+  5 class EventService {
+  6     static async createEventService(data) {
+→ 7         const event = await prisma.event.create({
+              data: {
+                org_id: "9",
+                        ~~~
+                title: "demo",
+                description: "demo test",
+                banner_image: undefined,
+                event_date: "03/12/2025",
+                event_time: "12:53",
+                mode: "offline",
+                venue_name: "TN"
+              }
+            })
+
+Argument `org_id`: Invalid value provided. Expected Int, provided String.
+[2025-12-03 14:04:41] [INFO] → Incoming → POST /api/eve/create
+[2025-12-03 14:07:41] [INFO] → Incoming → POST /api/eve/create

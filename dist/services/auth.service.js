@@ -272,5 +272,18 @@ class AuthService {
         });
         return { user, token };
     }
+    static async createEventSrevice(event_title, description, event_date, event_time, mode, image, venue) {
+        const event = await prisma.event.create({
+            data: {
+                title: event_title,
+                description: description,
+                banner_image: image,
+                event_date: event_date,
+                event_time: event_time,
+                venue: venue,
+            },
+        });
+        return event;
+    }
 }
 exports.AuthService = AuthService;

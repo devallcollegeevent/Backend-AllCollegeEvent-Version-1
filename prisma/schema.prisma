@@ -39,7 +39,8 @@ model User {
 
   crAt DateTime @default(now())
 
-  otps OTP[] 
+  otps  OTP[]
+  Event Event[]
 }
 
 model Org {
@@ -68,7 +69,8 @@ model Org {
 
   crAt DateTime @default(now())
 
-  otps OTP[] // <-- ADD THIS LINE
+  otps  OTP[] // <-- ADD THIS LINE
+  Event Event[]
 }
 
 model OTP {
@@ -87,4 +89,28 @@ model OTP {
 
   orgId Int?
   org   Org? @relation(fields: [orgId], references: [id], onDelete: Cascade)
+}
+
+model Event {
+  id         Int  @id @default(autoincrement())
+  org_id     Int
+  created_by Int? // NULL allowed
+
+  title        String
+  slug         String?
+  description  String?
+  banner_image String?
+  venue_name   String?
+  mode         String?
+  event_date   String?
+  event_time   String?
+  venue        String?
+
+  published_at DateTime?
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+
+  org    Org   @relation(fields: [org_id], references: [id])
+  User   User? @relation(fields: [userId], references: [id])
+  userId Int?
 }
