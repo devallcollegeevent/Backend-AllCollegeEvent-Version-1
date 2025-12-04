@@ -2,7 +2,7 @@ const prisma = require("../config/db.config");
 
 export class EventService {
   static async createEventService(data: {
-    org_id1: number;
+    org_id: number;
     event_title: string;
     description?: string;
     event_date: string;
@@ -13,14 +13,14 @@ export class EventService {
   }) {
     const event = await prisma.event.create({
       data: {
-        org_id: data.org_id1,
+        orgIdentity: data.org_id,
         title: data.event_title,
         description: data.description,
-        banner_image: data.image, // 🔥 Store the uploaded filename
-        event_date: data.event_date,
-        event_time: data.event_time,
+        bannerImage: data.image, 
+        eventDate: data.event_date,
+        eventTime: data.event_time,
         mode: data.mode,
-        venue_name: data.venue,
+        venue: data.venue,
       },
     });
 
@@ -29,13 +29,15 @@ export class EventService {
 
   static async getAllEventsService() {
     return await prisma.event.findMany({
-      orderBy: { created_at: "desc" },
+      orderBy: { createdBy: "desc" },
     });
   }
 
-  static async getEventByIdService(id: number) {
+  static async getEventByIdService(id: String) {
+    console.log(id);
+    
     return await prisma.event.findUnique({
-      where: { id },
+      where: { identity: id },
     });
   }
 
@@ -52,22 +54,22 @@ export class EventService {
     }
   ) {
     return await prisma.event.update({
-      where: { id },
+      where: { identity: id },
       data: {
         title: data.event_title,
         description: data.description,
-        banner_image: data.image ?? undefined,
-        event_date: data.event_date,
-        event_time: data.event_time,
+        bannerImage: data.image ?? undefined,
+        eventDate: data.event_date,
+        eventTime: data.event_time,
         mode: data.mode,
-        venue_name: data.venue,
+        venue: data.venue,
       },
     });
   }
 
-  static async deleteEventService(id: number) {
+  static async deleteEventService(id: String) {
     return await prisma.event.delete({
-      where: { id },
+      where: { identity: id },
     });
   }
 }

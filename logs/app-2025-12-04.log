@@ -1,0 +1,152 @@
+[2025-12-04 09:39:12] [INFO] → Incoming → POST /acc/signup
+[2025-12-04 09:39:12] [ERROR] → Error → POST /acc/signup | Message: Role not found in database
+[2025-12-04 09:40:29] [INFO] → Incoming → POST /acc/signup
+[2025-12-04 09:42:06] [INFO] → Incoming → POST /acc/login
+[2025-12-04 09:42:19] [INFO] → Incoming → POST /acc/login
+[2025-12-04 09:42:19] [ERROR] → Error → POST /acc/login | Message: Account not found
+[2025-12-04 09:42:23] [INFO] → Incoming → POST /acc/login
+[2025-12-04 09:42:52] [INFO] → Incoming → POST /acc/signup
+[2025-12-04 09:47:18] [INFO] → Incoming → POST /acc/signup
+[2025-12-04 09:49:33] [INFO] → Incoming → POST /acc/login
+[2025-12-04 09:50:40] [INFO] → Incoming → POST /acc/login
+[2025-12-04 09:52:33] [INFO] → Incoming → POST /acc/login
+[2025-12-04 09:52:57] [INFO] → Incoming → POST /acc/signup
+[2025-12-04 09:54:04] [INFO] → Incoming → POST /acc/login
+[2025-12-04 09:54:47] [INFO] → Incoming → POST /acc/forgot-password
+[2025-12-04 09:55:13] [INFO] → Incoming → POST /acc/verify-otp
+[2025-12-04 09:55:13] [ERROR] → Error → POST /acc/verify-otp | Message: Invalid OTP
+[2025-12-04 09:55:21] [INFO] → Incoming → POST /acc/verify-otp
+[2025-12-04 09:55:46] [INFO] → Incoming → POST /acc/reset-password
+[2025-12-04 09:58:19] [INFO] → Incoming → POST /acc/google-login
+[2025-12-04 10:00:40] [INFO] → Incoming → POST /acc/google-login
+[2025-12-04 10:00:55] [INFO] → Incoming → POST /acc/google-login
+[2025-12-04 10:01:33] [INFO] → Incoming → POST /acc/google-login
+[2025-12-04 10:02:18] [INFO] → Incoming → POST /acc/resend-otp
+[2025-12-04 10:03:02] [INFO] → Incoming → POST /api/eve/create
+[2025-12-04 10:04:27] [INFO] → Incoming → POST /org/eve/create
+[2025-12-04 10:04:28] [ERROR] → Error → POST /org/eve/create | Message: 
+Invalid `prisma.event.create()` invocation in
+D:\Siva\Backend-AllCollegeEvent-Version-1\dist\services\event.service.js:7:42
+
+  4 const prisma = require("../config/db.config");
+  5 class EventService {
+  6     static async createEventService(data) {
+→ 7         const event = await prisma.event.create({
+              data: {
+                orgIdentity: 9,
+                             ~
+                title: "demo",
+                description: "demo test",
+                bannerImage: null,
+                eventDate: "03/12/2025",
+                eventTime: "12:53",
+                mode: "offline",
+                venue: "TN"
+              }
+            })
+
+Argument `orgIdentity`: Invalid value provided. Expected String, provided Int.
+[2025-12-04 10:05:00] [INFO] → Incoming → POST /org/eve/create
+[2025-12-04 10:05:00] [ERROR] → Error → POST /org/eve/create | Message: 
+Invalid `prisma.event.create()` invocation in
+D:\Siva\Backend-AllCollegeEvent-Version-1\dist\services\event.service.js:7:42
+
+  4 const prisma = require("../config/db.config");
+  5 class EventService {
+  6     static async createEventService(data) {
+→ 7         const event = await prisma.event.create({
+              data: {
+                orgIdentity: NaN,
+                title: "demo",
+                description: "demo test",
+                bannerImage: null,
+                eventDate: "03/12/2025",
+                eventTime: "12:53",
+                mode: "offline",
+                venue: "TN",
+            +   org: {
+            +     create: OrgCreateWithoutEventsInput | OrgUncheckedCreateWithoutEventsInput,
+            +     connectOrCreate: OrgCreateOrConnectWithoutEventsInput,
+            +     connect: OrgWhereUniqueInput
+            +   }
+              }
+            })
+
+Argument `org` is missing.
+[2025-12-04 10:06:56] [INFO] → Incoming → POST /org/eve/create
+[2025-12-04 10:06:57] [ERROR] → Error → POST /org/eve/create | Message: 
+Invalid `prisma.event.create()` invocation in
+D:\Siva\Backend-AllCollegeEvent-Version-1\dist\services\event.service.js:7:42
+
+  4 const prisma = require("../config/db.config");
+  5 class EventService {
+  6     static async createEventService(data) {
+→ 7         const event = await prisma.event.create({
+              data: {
+                orgIdentity: NaN,
+                title: "demo",
+                description: "demo test",
+                bannerImage: null,
+                eventDate: "03/12/2025",
+                eventTime: "12:53",
+                mode: "offline",
+                venue: "TN",
+            +   org: {
+            +     create: OrgCreateWithoutEventsInput | OrgUncheckedCreateWithoutEventsInput,
+            +     connectOrCreate: OrgCreateOrConnectWithoutEventsInput,
+            +     connect: OrgWhereUniqueInput
+            +   }
+              }
+            })
+
+Argument `org` is missing.
+[2025-12-04 10:07:12] [INFO] → Incoming → POST /org/eve/create
+[2025-12-04 10:07:51] [INFO] → Incoming → GET /org/eve/
+[2025-12-04 10:08:07] [INFO] → Incoming → POST /org/eve/create
+[2025-12-04 10:08:14] [INFO] → Incoming → GET /org/eve/
+[2025-12-04 10:09:36] [INFO] → Incoming → GET /org/eve/19f02608-1705-4b2a-b592-b3dbbf5aecc8
+[2025-12-04 10:09:36] [ERROR] → Error → GET /org/eve/19f02608-1705-4b2a-b592-b3dbbf5aecc8 | Message: 
+Invalid `prisma.event.findUnique()` invocation in
+D:\Siva\Backend-AllCollegeEvent-Version-1\dist\services\event.service.js:27:35
+
+  24     });
+  25 }
+  26 static async getEventByIdService(id) {
+→ 27     return await prisma.event.findUnique({
+           where: {
+         +   identity: String
+           }
+         })
+
+Argument `identity` is missing.
+[2025-12-04 10:10:08] [INFO] → Incoming → GET /org/eve/19f02608-1705-4b2a-b592-b3dbbf5aecc8
+[2025-12-04 10:10:08] [ERROR] → Error → GET /org/eve/19f02608-1705-4b2a-b592-b3dbbf5aecc8 | Message: 
+Invalid `prisma.event.findUnique()` invocation in
+D:\Siva\Backend-AllCollegeEvent-Version-1\dist\services\event.service.js:27:35
+
+  24     });
+  25 }
+  26 static async getEventByIdService(id) {
+→ 27     return await prisma.event.findUnique({
+           where: {
+         +   identity: String
+           }
+         })
+
+Argument `identity` is missing.
+[2025-12-04 10:11:11] [INFO] → Incoming → GET /org/eve/19f02608-1705-4b2a-b592-b3dbbf5aecc8
+[2025-12-04 10:11:11] [ERROR] → Error → GET /org/eve/19f02608-1705-4b2a-b592-b3dbbf5aecc8 | Message: 
+Invalid `prisma.event.findUnique()` invocation in
+D:\Siva\Backend-AllCollegeEvent-Version-1\dist\services\event.service.js:28:35
+
+  25 }
+  26 static async getEventByIdService(id) {
+  27     console.log(id);
+→ 28     return await prisma.event.findUnique({
+           where: {
+         +   identity: String
+           }
+         })
+
+Argument `identity` is missing.
+[2025-12-04 10:12:02] [INFO] → Incoming → GET /org/eve/19f02608-1705-4b2a-b592-b3dbbf5aecc8

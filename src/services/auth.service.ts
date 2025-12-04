@@ -8,13 +8,13 @@ import { sendOtpEmail } from "../utils/sendOtp";
 const sendVerificationMail = async (org: any) => {
   const URL = process.env.MAIL_SEND;
 
-  const token = generateToken(org.id);
+  const token = generateToken({ identity: org.identity });
 
   const verifyUrl = `${URL}verify?token=${token}`;
 
   const html = `
     <h2>Verify Your Organization Account</h2>
-    <p>Hello <b>${org.org_name}</b>,</p>
+    <p>Hello <b>${org.organizationName}</b>,</p>
     <p>Your account was created successfully. Please click the link below to verify:</p>
     <a href="${verifyUrl}" 
        style="padding:10px 15px; background:#4CAF50; color:white; border-radius:4px; text-decoration:none;">
@@ -24,7 +24,7 @@ const sendVerificationMail = async (org: any) => {
   `;
 
   await sendEmail({
-    to: org.domEmail,
+    to: org.domainEmail,
     subject: "Verify your account",
     html,
   });
@@ -46,7 +46,7 @@ export class AuthService {
 
     const existsUser = await prisma.user.findUnique({ where: { email } });
     const existsOrg = await prisma.org.findUnique({
-      where: { domEmail: email },
+      where: { domainEmail: email },
     });
 
     if (existsUser || existsOrg) throw new Error("Email already registered");
@@ -58,7 +58,7 @@ export class AuthService {
         data: {
           name,
           email,
-          pwd: hashed,
+          password: hashed,
           roleId: role.id,
         },
       });
@@ -69,15 +69,15 @@ export class AuthService {
     if (type === "org") {
       const org = await prisma.org.create({
         data: {
-          domEmail: email,
-          pwd: hashed,
+          domainEmail: email,
+          password: hashed,
           roleId: role.id,
-          org_name: extra.org_name,
-          org_cat: extra.org_cat,
+          organizationName: extra.org_name,
+          organizationCategory: extra.org_cat,
           country: extra.country,
           state: extra.state,
           city: extra.city,
-          pImg: extra.pImg ?? null,
+          profileImage: extra.pImg ?? null,
         },
       });
 
@@ -95,12 +95,12 @@ export class AuthService {
     if (type === "user") {
       user = await prisma.user.findUnique({ where: { email } });
     } else if (type === "org") {
-      user = await prisma.org.findUnique({ where: { domEmail: email } });
+      user = await prisma.org.findUnique({ where: { domainEmail: email } });
     }
 
     if (!user) throw new Error("Account not found");
 
-    const ok = await comparePassword(password, user.pwd);
+    const ok = await comparePassword(password, user.password);
     if (!ok) throw new Error("Invalid password");
 
     let roleUUID = null;
@@ -119,8 +119,7 @@ export class AuthService {
     };
 
     const token = generateToken({
-      id: user.id,
-      idnty: user.idnty,
+      identity: user.identity,
       email: email,
       roleId: roleUUID,
       type: type,
@@ -143,7 +142,7 @@ export class AuthService {
     const orgIdnty = decoded.data;
 
     const org = await prisma.org.findUnique({
-      where: { idnty: orgIdnty },
+      where: { identity: orgIdnty },
     });
 
     if (!org) {
@@ -151,8 +150,8 @@ export class AuthService {
     }
 
     await prisma.org.update({
-      where: { idnty: orgIdnty },
-      data: { isVerf: true },
+      where: { identity: orgIdnty },
+      data: { isVerified: true },
     });
 
     return {
@@ -168,7 +167,7 @@ export class AuthService {
 
     if (!account) {
       account = await prisma.org.findUnique({
-        where: { domEmail: email },
+        where: { domainEmail: email },
       });
     }
 
@@ -182,9 +181,9 @@ export class AuthService {
         email,
         code: otp,
         purpose: "FORGOT_PASSWORD",
-        expAt,
-        userId: account.email ? account.id : null,
-        orgId: account.domEmail ? account.id : null,
+        expiresAt: expAt,
+        userIdentity: account.email ? account.identity : null,
+        orgIdentity: account.domEmail ? account.id : null,
       },
     });
 
@@ -198,7 +197,7 @@ export class AuthService {
 
   static async resendOtp(email: string) {
     const user = await prisma.user.findUnique({ where: { email } });
-    const org = await prisma.org.findUnique({ where: { domEmail: email } });
+    const org = await prisma.org.findUnique({ where: { domainEmail: email } });
 
     if (!user && !org) {
       throw new Error("Account not found");
@@ -206,7 +205,7 @@ export class AuthService {
 
     const existingOtp = await prisma.oTP.findFirst({
       where: { email },
-      orderBy: { crAt: "desc" },
+      orderBy: { createdAt: "desc" },
     });
 
     const otp = Math.floor(1000 + Math.random() * 9000).toString();
@@ -217,8 +216,8 @@ export class AuthService {
         where: { id: existingOtp.id },
         data: {
           code: otp,
-          expAt,
-          crAt: new Date(),
+          expiresAt: expAt,
+          createdAt: new Date(),
         },
       });
     } else {
@@ -226,10 +225,10 @@ export class AuthService {
         data: {
           email,
           code: otp,
-          expAt,
-          crAt: new Date(),
-          userId: user ? user.id : null,
-          orgId: org ? org.id : null,
+          expiresAt: expAt,
+          createdAt: new Date(),
+          userIdentity: user ? user.identity : null,
+          orgIdentity: org ? org.identity : null,
         },
       });
     }
@@ -262,13 +261,13 @@ export class AuthService {
 
     let updatedUser = await prisma.user.updateMany({
       where: { email },
-      data: { pwd: hashed },
+      data: { password: hashed },
     });
 
     if (updatedUser.count === 0) {
       updatedUser = await prisma.org.updateMany({
-        where: { domEmail: email },
-        data: { pwd: hashed },
+        where: { domainEmail: email },
+        data: { password: hashed },
       });
     }
 
@@ -310,16 +309,15 @@ export class AuthService {
         data: {
           name: name || "Google User",
           email,
-          pwd: "",
-          pImg: picture || null,
+          password: "",
+          profileImage: picture || null,
           roleId: role.id,
         },
       });
     }
 
     const token = generateToken({
-      id: user.id,
-      idnty: user.idnty,
+      identity: user.identity,
       email: email,
       roleId: roleUUID,
       type: "user",

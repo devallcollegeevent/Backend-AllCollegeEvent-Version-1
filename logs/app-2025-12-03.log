@@ -340,3 +340,150 @@ An operation failed because it depends on one or more records that were required
 [2025-12-03 15:04:44] [INFO] → Incoming → GET /org/eve/11
 [2025-12-03 15:04:44] [ERROR] → Error → GET /org/eve/11 | Message: Event not found
 [2025-12-03 15:04:50] [INFO] → Incoming → GET /org/eve/4
+[2025-12-03 15:47:57] [INFO] → Incoming → POST /acc/signup
+[2025-12-03 17:19:53] [INFO] → Incoming → POST /acc/signup
+[2025-12-03 17:19:53] [ERROR] → Error → POST /acc/signup | Message: 
+Invalid `prisma.org.create()` invocation in
+D:\Siva\Backend-AllCollegeEvent-Version-1\dist\services\auth.service.js:56:42
+
+  53     return user;
+  54 }
+  55 if (type === "org") {
+→ 56     const org = await prisma.org.create({
+           data: {
+             domainEmail: "sivaranji5670@gmail.com",
+             password: "$2b$10$pBoHO30wBrV38gerLFj8OOIl8EqZ1dB0xWLpJeDvhTvE4fBEPsLRq",
+             roleId: 2,
+             organaizationName: undefined,
+             organaizationCategory: undefined,
+             country: "India",
+             state: "TN",
+             city: "Coimbatore",
+             profileImage: null,
+         +   organizationName: String
+           }
+         })
+
+Argument `organizationName` is missing.
+[2025-12-03 17:21:30] [INFO] → Incoming → POST /acc/signup
+[2025-12-03 17:21:30] [ERROR] → Error → POST /acc/signup | Message: 
+Invalid `prisma.org.create()` invocation in
+D:\Siva\Backend-AllCollegeEvent-Version-1\dist\services\auth.service.js:56:42
+
+  53     return user;
+  54 }
+  55 if (type === "org") {
+→ 56     const org = await prisma.org.create({
+           data: {
+             domainEmail: "sivaranji5670@gmail.com",
+             password: "$2b$10$YiSeIAfDQrSwwWqB.ag32OBC1KvfS.RSsBhiEn8tLABZtGTRlmrZi",
+             roleId: 2,
+             organaizationName: undefined,
+             organaizationCategory: undefined,
+             country: "India",
+             state: "TN",
+             city: "Coimbatore",
+             profileImage: null,
+         +   organizationName: String
+           }
+         })
+
+Argument `organizationName` is missing.
+[2025-12-03 17:24:21] [INFO] → Incoming → POST /acc/signup
+[2025-12-03 17:24:21] [ERROR] → Error → POST /acc/signup | Message: 
+Invalid `prisma.org.create()` invocation in
+D:\Siva\Backend-AllCollegeEvent-Version-1\dist\services\auth.service.js:56:42
+
+  53     return user;
+  54 }
+  55 if (type === "org") {
+→ 56     const org = await prisma.org.create({
+           data: {
+             domainEmail: "sivaranji5670@gmail.com",
+             password: "$2b$10$GTXS9LJ0GClVqrJw5zweeO8ExEG/aJRBLuTDK7sxRlohgI0qwt/Fm",
+             roleId: 2,
+             organaizationName: undefined,
+             organaizationCategory: undefined,
+             country: "India",
+             state: "TN",
+             city: "Coimbatore",
+             profileImage: null,
+         +   organizationName: String
+           }
+         })
+
+Argument `organizationName` is missing.
+[2025-12-03 17:24:42] [INFO] → Incoming → POST /acc/signup
+[2025-12-03 17:24:43] [ERROR] → Error → POST /acc/signup | Message: 
+Invalid `prisma.org.create()` invocation in
+D:\Siva\Backend-AllCollegeEvent-Version-1\dist\services\auth.service.js:56:42
+
+  53     return user;
+  54 }
+  55 if (type === "org") {
+→ 56     const org = await prisma.org.create({
+           data: {
+             domainEmail: "sivaranji5670@gmail.com",
+             password: "$2b$10$HD6Pf.ka7tsrKVHhWwkmk.7hb/41Eb2E4m1gU4fMiMUNs59IJicaK",
+             roleId: 2,
+             organizationCategory: undefined,
+             country: "India",
+             state: "TN",
+             city: "Coimbatore",
+             profileImage: null,
+         +   organizationName: String
+           }
+         })
+
+Argument `organizationName` is missing.
+[2025-12-03 17:28:28] [INFO] → Incoming → POST /acc/signup
+[2025-12-03 17:28:30] [ERROR] → Error → POST /acc/signup | Message: No recipients defined
+[2025-12-03 17:28:43] [INFO] → Incoming → POST /acc/signup
+[2025-12-03 17:28:43] [ERROR] → Error → POST /acc/signup | Message: Email already registered
+[2025-12-03 17:29:59] [INFO] → Incoming → POST /acc/signup
+[2025-12-03 17:29:59] [ERROR] → Error → POST /acc/signup | Message: Email already registered
+[2025-12-03 17:31:51] [INFO] → Incoming → POST /acc/signup
+[2025-12-03 17:31:53] [ERROR] → Error → POST /acc/signup | Message: No recipients defined
+[2025-12-03 17:33:47] [INFO] → Incoming → POST /acc/signup
+[2025-12-03 17:33:49] [ERROR] → Error → POST /acc/signup | Message: No recipients defined
+[2025-12-03 17:35:48] [INFO] → Incoming → POST /acc/signup
+[2025-12-03 17:35:51] [ERROR] → Error → POST /acc/signup | Message: No recipients defined
+[2025-12-03 17:37:18] [INFO] → Incoming → POST /acc/signup
+[2025-12-03 17:38:32] [INFO] → Incoming → POST /acc/signup
+[2025-12-03 17:43:50] [INFO] → Incoming → POST /acc/signup
+[2025-12-03 17:53:02] [INFO] → Incoming → POST /acc/login
+[2025-12-03 17:53:02] [ERROR] → Error → POST /acc/login | Message: data and hash arguments required
+[2025-12-03 17:54:48] [INFO] → Incoming → POST /acc/login
+[2025-12-03 17:54:48] [ERROR] → Error → POST /acc/login | Message: data and hash arguments required
+[2025-12-03 18:03:35] [INFO] → Incoming → POST /acc/login
+[2025-12-03 18:03:35] [ERROR] → Error → POST /acc/login | Message: data and hash arguments required
+[2025-12-03 18:04:11] [INFO] → Incoming → POST /acc/login
+[2025-12-03 18:04:11] [ERROR] → Error → POST /acc/login | Message: Cannot destructure property 'email' of 'req.body' as it is undefined.
+[2025-12-03 18:07:12] [INFO] → Incoming → POST /acc/login
+[2025-12-03 18:07:31] [INFO] → Incoming → POST /acc/login
+[2025-12-03 18:11:32] [INFO] → Incoming → POST /api/auth/signup
+[2025-12-03 18:11:43] [INFO] → Incoming → POST /acc/signup
+[2025-12-03 18:11:53] [INFO] → Incoming → POST /acc/login
+[2025-12-03 18:11:53] [ERROR] → Error → POST /acc/login | Message: data and hash arguments required
+[2025-12-03 18:14:28] [INFO] → Incoming → POST /acc/login
+[2025-12-03 18:20:17] [INFO] → Incoming → POST /acc/forgot-password
+[2025-12-03 18:20:17] [ERROR] → Error → POST /acc/forgot-password | Message: 
+Invalid `prisma.oTP.create()` invocation in
+D:\Siva\Backend-AllCollegeEvent-Version-1\src\services\auth.service.ts:186:22
+
+  183 const otp = Math.floor(1000 + Math.random() * 9000).toString();
+  184 const expAt = new Date(Date.now() + 10 * 60 * 1000);
+  185 
+→ 186 await prisma.oTP.create({
+        data: {
+          email: "sivaranji5670@gmail.com",
+          code: "3942",
+          purpose: "FORGOT_PASSWORD",
+          expAt: new Date("2025-12-03T13:00:17.723Z"),
+          userId: null,
+          orgId: null,
+      +   expiresAt: DateTime
+        }
+      })
+
+Argument `expiresAt` is missing.

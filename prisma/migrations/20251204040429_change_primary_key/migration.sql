@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "OTP" ALTER COLUMN "expiresAt" DROP NOT NULL;

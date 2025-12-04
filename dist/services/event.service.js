@@ -6,45 +6,46 @@ class EventService {
     static async createEventService(data) {
         const event = await prisma.event.create({
             data: {
-                org_id: data.org_id1,
+                orgIdentity: data.org_id,
                 title: data.event_title,
                 description: data.description,
-                banner_image: data.image, // 🔥 Store the uploaded filename
-                event_date: data.event_date,
-                event_time: data.event_time,
+                bannerImage: data.image,
+                eventDate: data.event_date,
+                eventTime: data.event_time,
                 mode: data.mode,
-                venue_name: data.venue,
+                venue: data.venue,
             },
         });
         return event;
     }
     static async getAllEventsService() {
         return await prisma.event.findMany({
-            orderBy: { created_at: "desc" },
+            orderBy: { createdBy: "desc" },
         });
     }
     static async getEventByIdService(id) {
+        console.log(id);
         return await prisma.event.findUnique({
-            where: { id },
+            where: { identity: id },
         });
     }
     static async updateEventService(id, data) {
         return await prisma.event.update({
-            where: { id },
+            where: { identity: id },
             data: {
                 title: data.event_title,
                 description: data.description,
-                banner_image: data.image ?? undefined,
-                event_date: data.event_date,
-                event_time: data.event_time,
+                bannerImage: data.image ?? undefined,
+                eventDate: data.event_date,
+                eventTime: data.event_time,
                 mode: data.mode,
-                venue_name: data.venue,
+                venue: data.venue,
             },
         });
     }
     static async deleteEventService(id) {
         return await prisma.event.delete({
-            where: { id },
+            where: { identity: id },
         });
     }
 }

@@ -19,98 +19,100 @@ model Role {
 }
 
 model User {
-  id    Int    @id @default(autoincrement())
-  idnty String @unique @default(uuid())
+  identity String @id @default(uuid()) // PRIMARY KEY (UUID)
+  id       Int    @unique @default(autoincrement()) // SERIAL NUMBER
 
-  name  String
-  email String @unique
-  pwd   String
+  name     String
+  email    String @unique
+  password String // was pwd
 
-  phone   String?
-  city    String?
-  state   String?
-  country String?
-  pImg    String?
+  phone        String?
+  city         String?
+  state        String?
+  country      String?
+  profileImage String? // was pImg
 
-  isDel Boolean @default(false)
+  isDeleted Boolean @default(false)
 
   roleId Int?
   role   Role? @relation(fields: [roleId], references: [id])
 
-  crAt DateTime @default(now())
+  createdAt DateTime @default(now()) // was crAt
 
-  otps  OTP[]
-  Event Event[]
+  otps   OTP[]
+  events Event[] // was Event Event[]
 }
 
 model Org {
-  id    Int    @id @default(autoincrement())
-  idnty String @unique @default(uuid())
+  identity String @id @default(uuid())
+  id       Int    @unique @default(autoincrement())
 
-  domEmail String @unique
-  pwd      String
+  domainEmail String @unique
+  password    String
 
-  org_name String
-  org_cat  String
-  city     String
-  state    String
-  country  String
-  pImg     String?
-  whatsapp String?
-  insta    String?
-  linkedIn String?
+  organizationName     String
+  organizationCategory String
+  city                 String
+  state                String
+  country              String
+  profileImage         String?
+  whatsapp             String?
+  instagram            String?
+  linkedIn             String?
 
-  evCnt  Int     @default(0)
-  isDel  Boolean @default(false)
-  isVerf Boolean @default(false)
+  eventCount Int     @default(0)
+  isDeleted  Boolean @default(false)
+  isVerified Boolean @default(false)
 
   roleId Int?
   role   Role? @relation(fields: [roleId], references: [id])
 
-  crAt DateTime @default(now())
+  createdAt DateTime @default(now())
 
-  otps  OTP[] // <-- ADD THIS LINE
-  Event Event[]
+  otps   OTP[]
+  events Event[]
 }
 
 model OTP {
-  id    Int    @id @default(autoincrement())
-  idnty String @unique @default(uuid())
+  identity String @id @default(uuid())
+  id       Int    @unique @default(autoincrement())
 
   email   String
   code    String
   purpose String
 
-  expAt DateTime
-  crAt  DateTime @default(now())
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
 
-  userId Int?
-  user   User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userIdentity String?
+  user         User?   @relation(fields: [userIdentity], references: [identity], onDelete: Cascade)
 
-  orgId Int?
-  org   Org? @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  orgIdentity String?
+  org         Org?    @relation(fields: [orgIdentity], references: [identity], onDelete: Cascade)
 }
 
 model Event {
-  id         Int  @id @default(autoincrement())
-  org_id     Int
-  created_by Int? // NULL allowed
+  identity String @id @default(uuid())
+  id       Int    @unique @default(autoincrement())
 
-  title        String
-  slug         String?
-  description  String?
-  banner_image String?
-  venue_name   String?
-  mode         String?
-  event_date   String?
-  event_time   String?
-  venue        String?
+  orgIdentity String
+  createdBy   Int? // <-- FIXED (must match User.id)
 
-  published_at DateTime?
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
+  title       String
+  slug        String?
+  description String?
+  bannerImage String?
+  venueName   String?
+  mode        String?
+  eventDate   String?
+  eventTime   String?
+  venue       String?
 
-  org    Org   @relation(fields: [org_id], references: [id])
-  User   User? @relation(fields: [userId], references: [id])
-  userId Int?
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  org          Org     @relation(fields: [orgIdentity], references: [identity])
+  User         User?   @relation(fields: [userIdentity], references: [identity])
+  userIdentity String?
 }

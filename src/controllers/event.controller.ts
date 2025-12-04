@@ -14,13 +14,11 @@ export class EventController {
         mode,
         venue,
       } = req.body;
-
-      const org_id1 = Number(org_id);
       
       const image = req.file ? req.file.filename : null;
 
       const event = await EventService.createEventService({
-        org_id1,
+        org_id,
         event_title,
         description,
         event_date,
@@ -47,7 +45,7 @@ export class EventController {
 
   static async getEventById(req: Request, res: Response) {
     try {
-      const id = Number(req.params.id);
+      const id = String(req.params.id);
 
       const event = await EventService.getEventByIdService(id);
 
@@ -89,7 +87,7 @@ export class EventController {
 
   static async deleteEvent(req: Request, res: Response) {
     try {
-      const id = Number(req.params.id);
+      const id = String(req.params.id);
 
       await EventService.deleteEventService(id);
 

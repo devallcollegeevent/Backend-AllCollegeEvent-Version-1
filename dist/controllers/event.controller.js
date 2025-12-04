@@ -6,10 +6,9 @@ class EventController {
     static async createEvent(req, res) {
         try {
             const { org_id, event_title, description, event_date, event_time, mode, venue, } = req.body;
-            const org_id1 = Number(org_id);
             const image = req.file ? req.file.filename : null;
             const event = await event_service_1.EventService.createEventService({
-                org_id1,
+                org_id,
                 event_title,
                 description,
                 event_date,
@@ -35,7 +34,7 @@ class EventController {
     }
     static async getEventById(req, res) {
         try {
-            const id = Number(req.params.id);
+            const id = String(req.params.id);
             const event = await event_service_1.EventService.getEventByIdService(id);
             if (!event)
                 return res
@@ -69,7 +68,7 @@ class EventController {
     }
     static async deleteEvent(req, res) {
         try {
-            const id = Number(req.params.id);
+            const id = String(req.params.id);
             await event_service_1.EventService.deleteEventService(id);
             res
                 .status(200)
