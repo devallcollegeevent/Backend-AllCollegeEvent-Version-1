@@ -42,7 +42,10 @@ export class OrgService {
     }));
   }
 
-  static async getEventById(orgId: string, eventId: string): Promise<EventType[]> {
+  static async getEventById(
+    orgId: string,
+    eventId: string
+  ): Promise<EventType[]> {
     const BASE_URL = process.env.BASE_URL ?? "";
     const events = prisma.event.findFirst({
       where: {
