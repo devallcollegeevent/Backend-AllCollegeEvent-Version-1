@@ -13,7 +13,7 @@ export class UserController {
 
   static async getUserById(req: Request, res: Response) {
     try {
-      const identity = req.params.id;
+      const identity = req.params.userId;
       const user = await UserService.getUserById(identity);
 
       if (!user) {
@@ -30,7 +30,7 @@ export class UserController {
 
   static async updateUser(req: Request, res: Response) {
     try {
-      const identity = req.params.id;
+      const identity = req.params.userId;
       const body = req.body;
 
       const updated = await UserService.updateUser(identity, body);
@@ -43,7 +43,7 @@ export class UserController {
 
   static async deleteUser(req: Request, res: Response) {
     try {
-      const identity = req.params.id;
+      const identity = req.params.userId;
 
       const deletedUser = await UserService.deleteUser(identity);
 

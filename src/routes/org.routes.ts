@@ -6,27 +6,9 @@ import { auth } from "google-auth-library";
 
 const router = Router();
 
-// Events & Org
-router.post("/eve/create", authMiddleware,upload.single("image"), OrgController.createEvent);
-router.get("/eve", authMiddleware, OrgController.getAllEvents);
-
-router.get("/", authMiddleware, OrgController.getAllOrgs);
-router.get("/:id", authMiddleware, OrgController.getOrgById);
-router.put("/:id", authMiddleware, OrgController.updateOrg);
-router.delete("/:id", authMiddleware, OrgController.deleteOrg);
-
-router.get("/:id/eve", authMiddleware, OrgController.getOrgEvents);
-router.get("/:orgId/eve/:eventId", authMiddleware, OrgController.getEventById);
-router.put(
-  "/:orgId/eve/:eventId",
-  authMiddleware,
-  upload.single("image"),
-  OrgController.updateEvent
-);
-router.delete(
-  "/:orgId/eve/:eventId",
-  authMiddleware,
-  OrgController.deleteEvent
-);
+router.get("/organizations/",  OrgController.getAllOrgs);
+router.get("/organizations/:orgId",  OrgController.getOrgById);
+router.put("/organizations/:orgId",  OrgController.updateOrg);
+router.delete("/organizations/:orgId",  OrgController.deleteOrg);
 
 export default router;

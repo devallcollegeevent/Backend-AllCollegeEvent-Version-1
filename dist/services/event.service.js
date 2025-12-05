@@ -19,34 +19,90 @@ class EventService {
         return event;
     }
     static async getAllEventsService() {
-        return await prisma.event.findMany({
-            orderBy: { createdBy: "desc" },
+        const BASE_URL = process.env.BASE_URL ?? "";
+        const rawEvents = await prisma.event.findMany({
+            orderBy: { createdAt: "desc" },
+            include: {
+                org: {
+                    select: {
+                        organizationName: true,
+                    },
+                },
+            },
         });
+        const events = rawEvents.map((e) => ({
+            ...e,
+            bannerImage: e.bannerImage ? `${BASE_URL}${e.bannerImage}` : null,
+        }));
+        return events;
     }
-    static async getEventByIdService(id) {
-        console.log(id);
-        return await prisma.event.findUnique({
-            where: { identity: id },
+    static async getEventById(orgId, eventId) {
+        const BASE_URL = process.env.BASE_URL ?? "";
+        const event = await prisma.event.findFirst({
+            where: {
+                identity: eventId,
+                orgIdentity: orgId,
+            },
+            include: {
+                org: {
+                    select: {
+                        organizationName: true,
+                    },
+                },
+            },
         });
+        if (!event)
+            return null;
+        return {
+            ...event,
+            bannerImage: event.bannerImage ? `${BASE_URL}${event.bannerImage}` : null,
+        };
     }
-    static async updateEventService(id, data) {
-        return await prisma.event.update({
-            where: { identity: id },
+    static async updateEvent(orgId, eventId, data) {
+        return prisma.event.update({
+            where: { identity: eventId, orgIdentity: orgId },
             data: {
                 title: data.event_title,
                 description: data.description,
-                bannerImage: data.image ?? undefined,
+                bannerImage: data.bannerImage ?? undefined,
+                venueName: data.venueName ?? undefined,
+                mode: data.mode,
                 eventDate: data.event_date,
                 eventTime: data.event_time,
-                mode: data.mode,
                 venue: data.venue,
+                updatedAt: new Date(),
             },
         });
     }
-    static async deleteEventService(id) {
-        return await prisma.event.delete({
-            where: { identity: id },
+    static async deleteEvent(orgId, eventId) {
+        return prisma.event.deleteMany({
+            where: {
+                identity: eventId,
+                orgIdentity: orgId,
+            },
         });
+    }
+    static async getEventsByOrg(identity) {
+        const BASE_URL = process.env.BASE_URL ?? "";
+        const events = await prisma.event.findMany({
+            where: {
+                orgIdentity: identity,
+            },
+            orderBy: {
+                createdAt: "desc",
+            },
+            include: {
+                org: {
+                    select: {
+                        organizationName: true,
+                    },
+                },
+            },
+        });
+        return events.map((event) => ({
+            ...event,
+            bannerImage: event.bannerImage ? `${BASE_URL}${event.bannerImage}` : null,
+        }));
     }
 }
 exports.EventService = EventService;

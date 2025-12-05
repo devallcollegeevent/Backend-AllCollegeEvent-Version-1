@@ -5,9 +5,9 @@ const { seedRoles } = require("./seeds/role.seed.ts");
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("🌱 Seeding database...");
+  console.log("Seeding database...");
   await seedRoles();
-  console.log("🌱 Seed completed!");
+  console.log("Seed completed!");
 }
 
 main()

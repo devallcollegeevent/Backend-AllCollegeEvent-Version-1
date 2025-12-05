@@ -5,6 +5,7 @@ import dotenv from 'dotenv'
 import authRoutes from "./routes/auth.routes"
 import orgRoutes from "./routes/org.routes"
 import userRoutes from "./routes/user.routes";
+import eventRoutes from "./routes/event.routes"
 import path from 'path'
 
 dotenv.config();
@@ -14,17 +15,19 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: [process.env.DOMAIN],
+    origin: [process.env.DOMAIN,process.env.DOMAIN1],
     credentials: true,
   })
 );
+
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 app.use(appLogger);
 
-app.use("/acc", authRoutes);
-app.use("/org", orgRoutes);
-app.use("/user", userRoutes);
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1", userRoutes);
+app.use("/api/v1", orgRoutes);
+app.use("/api/v1/organizations",eventRoutes)
 
 app.get("/", (req: any, res: any) => {
   res.send("Backend running with CommonJS ");
