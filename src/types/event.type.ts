@@ -19,3 +19,9 @@ export interface EventType {
     organizationName: string;
   };
 }
+
+export interface DecodedToken {
+  identity: string;
+  roleId: number;
+  email: string;
+}

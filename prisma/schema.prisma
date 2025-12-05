@@ -32,15 +32,18 @@ model User {
   country      String?
   profileImage String? // was pImg
 
-  isDeleted Boolean @default(false)
+  isDeleted   Boolean   @default(false)
+  isActive    Boolean?  @default(true)
+  lastLoginAt DateTime?
 
   roleId Int?
   role   Role? @relation(fields: [roleId], references: [id])
 
   createdAt DateTime @default(now()) // was crAt
 
-  otps   OTP[]
-  events Event[] // was Event Event[]
+  otps          OTP[]
+  events        Event[] // was Event Event[]
+  SocialAccount SocialAccount[]
 }
 
 model Org {
@@ -67,6 +70,11 @@ model Org {
   roleId Int?
   role   Role? @relation(fields: [roleId], references: [id])
 
+  updatedAt DateTime? @updatedAt
+  isActive  Boolean?  @default(true)
+  logoUrl   String?
+  website   String?
+
   createdAt DateTime @default(now())
 
   otps   OTP[]
@@ -83,6 +91,9 @@ model OTP {
 
   expiresAt DateTime?
   createdAt DateTime  @default(now())
+
+  usedAt    DateTime? // NEW
+  ipAddress String? // NEW
 
   userIdentity String?
   user         User?   @relation(fields: [userIdentity], references: [identity], onDelete: Cascade)
@@ -115,4 +126,31 @@ model Event {
   org          Org     @relation(fields: [orgIdentity], references: [identity])
   User         User?   @relation(fields: [userIdentity], references: [identity])
   userIdentity String?
+}
+
+model AuthProvider {
+  identity     String   @id @default(uuid())
+  id           Int      @unique @default(autoincrement())
+  providerName String
+  displayName  String
+  status       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  socialAccounts SocialAccount[]
+}
+
+model SocialAccount {
+  identity       String  @id @default(uuid())
+  id             Int     @unique @default(autoincrement())
+  userId         String
+  providerId     String // MUST be String to match AuthProvider.identity
+  providerUserId String
+  providerEmail  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User         @relation(fields: [userId], references: [identity])
+  provider AuthProvider @relation(fields: [providerId], references: [identity])
 }

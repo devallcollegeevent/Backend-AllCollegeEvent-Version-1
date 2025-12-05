@@ -8,3 +8,15 @@
 [2025-12-05 09:38:42] [INFO] → Incoming → GET /org/0e12c05a-1791-4e39-b34f-e38aab0a2edd/eve/f7bd8f0a-40ba-4c65-a2ec-4e851c61df99
 [2025-12-05 09:39:13] [INFO] → Incoming → GET /org/0e12c05a-1791-4e39-b34f-e38aab0a2edd/eve
 [2025-12-05 09:41:04] [INFO] → Incoming → GET /org/0e12c05a-1791-4e39-b34f-e38aab0a2edd/eve
+[2025-12-05 10:01:27] [INFO] → Incoming → GET /org/be7c2a49-4d0f-4624-be0f-1c31210e1d8c
+[2025-12-05 10:11:09] [INFO] → Incoming → POST /acc/login
+[2025-12-05 10:11:53] [INFO] → Incoming → GET /org/0e12c05a-1791-4e39-b34f-e38aab0a2edd/eve/f7bd8f0a-40ba-4c65-a2ec-4e851c61df99
+[2025-12-05 10:12:00] [INFO] → Incoming → GET /org/0e12c05a-1791-4e39-b34f-e38aab0a2edd/eve/f7bd8f0a-40ba-4c65-a2ec-4e851c61df99
+[2025-12-05 10:12:18] [INFO] → Incoming → GET /org/0e12c05a-1791-4e39-b34f-e38aab0a2edd/eve/f7bd8f0a-40ba-4c65-a2ec-4e851c61df99
+[2025-12-05 10:12:18] [ERROR] → Error → GET /org/0e12c05a-1791-4e39-b34f-e38aab0a2edd/eve/f7bd8f0a-40ba-4c65-a2ec-4e851c61df99 | Message: Authorization header missing
+[2025-12-05 10:12:27] [INFO] → Incoming → GET /org/0e12c05a-1791-4e39-b34f-e38aab0a2edd/eve/f7bd8f0a-40ba-4c65-a2ec-4e851c61df99
+[2025-12-05 10:12:27] [ERROR] → Error → GET /org/0e12c05a-1791-4e39-b34f-e38aab0a2edd/eve/f7bd8f0a-40ba-4c65-a2ec-4e851c61df99 | Message: Token not provided
+[2025-12-05 10:12:54] [INFO] → Incoming → GET /org/0e12c05a-1791-4e39-b34f-e38aab0a2edd/eve/f7bd8f0a-40ba-4c65-a2ec-4e851c61df99
+[2025-12-05 10:13:02] [INFO] → Incoming → GET /org/0e12c05a-1791-4e39-b34f-e38aab0a2edd/eve/f7bd8f0a-40ba-4c65-a2ec-4e851c61df99
+[2025-12-05 10:13:02] [ERROR] → Error → GET /org/0e12c05a-1791-4e39-b34f-e38aab0a2edd/eve/f7bd8f0a-40ba-4c65-a2ec-4e851c61df99 | Message: Authorization header missing
+[2025-12-05 10:13:07] [INFO] → Incoming → GET /org/0e12c05a-1791-4e39-b34f-e38aab0a2edd/eve/f7bd8f0a-40ba-4c65-a2ec-4e851c61df99
