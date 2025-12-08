@@ -28,28 +28,6 @@ export class EventService {
     return event;
   }
 
-  static async getAllEventsService(): Promise<EventType[]> {
-    const BASE_URL = process.env.BASE_URL ?? "";
-
-    const rawEvents = await prisma.event.findMany({
-      orderBy: { createdAt: "desc" },
-      include: {
-        org: {
-          select: {
-            organizationName: true,
-          },
-        },
-      },
-    });
-
-    const events: EventType[] = rawEvents.map((e: EventType) => ({
-      ...e,
-      bannerImage: e.bannerImage ? `${BASE_URL}${e.bannerImage}` : null,
-    }));
-
-    return events;
-  }
-
   static async getEventById(
     orgId: string,
     eventId: string
@@ -127,5 +105,55 @@ export class EventService {
       ...event,
       bannerImage: event.bannerImage ? `${BASE_URL}${event.bannerImage}` : null,
     }));
+  }
+
+  static async getAllEventsService(): Promise<EventType[]> {
+    const BASE_URL = process.env.BASE_URL ?? "";
+
+    const rawEvents = await prisma.event.findMany({
+      orderBy: { createdAt: "desc" },
+      include: {
+        org: {
+          select: {
+            organizationName: true,
+          },
+        },
+      },
+    });
+
+    const events: EventType[] = rawEvents.map((e: EventType) => ({
+      ...e,
+      bannerImage: e.bannerImage ? `${BASE_URL}${e.bannerImage}` : null,
+    }));
+
+    return events;
+  }
+
+  static async getSingleEventsService(
+    eventId: string
+  ): Promise<EventType | null> {
+    const BASE_URL = process.env.BASE_URL ?? "";
+
+    const rawEvent = await prisma.event.findUnique({
+      where: { identity:eventId },
+      include: {
+        org: {
+          select: {
+            organizationName: true,
+          },
+        },
+      },
+    });
+
+    if (!rawEvent) return null;
+
+    const event: EventType = {
+      ...rawEvent,
+      bannerImage: rawEvent.bannerImage
+        ? `${BASE_URL}${rawEvent.bannerImage}`
+        : null,
+    };
+
+    return event;
   }
 }

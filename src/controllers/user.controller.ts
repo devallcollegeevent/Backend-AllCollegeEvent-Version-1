@@ -5,9 +5,9 @@ export class UserController {
   static async getAllUsers(req: Request, res: Response) {
     try {
       const users = await UserService.getAllUsers();
-      res.json({ success: true, data: users });
+      res.json({ status: true, data: users, message:"All Users Fetched" });
     } catch (err: any) {
-      res.status(500).json({ success: false, message: err.message });
+      res.status(500).json({ status: false, message: err.message });
     }
   }
 
@@ -19,12 +19,12 @@ export class UserController {
       if (!user) {
         return res
           .status(404)
-          .json({ success: false, message: "User not found" });
+          .json({ status: false, message: "User not found" });
       }
 
-      res.json({ success: true, data: user });
+      res.json({ status: true, data: user, message:"User Data Fetched" });
     } catch (err: any) {
-      res.status(500).json({ success: false, message: err.message });
+      res.status(500).json({ status: false, message: err.message });
     }
   }
 
@@ -35,9 +35,9 @@ export class UserController {
 
       const updated = await UserService.updateUser(identity, body);
 
-      res.json({ success: true, data: updated });
+      res.json({ status: true, data: updated, message:"User Data Updated" });
     } catch (err: any) {
-      res.status(500).json({ success: false, message: err.message });
+      res.status(500).json({ status: false, message: err.message });
     }
   }
 
@@ -47,9 +47,9 @@ export class UserController {
 
       const deletedUser = await UserService.deleteUser(identity);
 
-      res.json({ success: true, data: deletedUser });
+      res.json({ status: true, data: deletedUser, message:"User deleted" });
     } catch (err: any) {
-      res.status(500).json({ success: false, message: err.message });
+      res.status(500).json({ status: false, message: err.message });
     }
   }
 }

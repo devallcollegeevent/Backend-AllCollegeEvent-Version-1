@@ -28,7 +28,7 @@ app.use(appLogger);
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1", userRoutes);
 app.use("/api/v1", orgRoutes);
-app.use("/api/v1/organizations",eventRoutes)
+app.use("/api/v1",eventRoutes)
 
 // testing API
 app.get("/", (req: any, res: any) => {

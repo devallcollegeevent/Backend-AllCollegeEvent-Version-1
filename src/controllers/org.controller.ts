@@ -5,9 +5,9 @@ export class OrgController {
   static async getAllOrgs(req: Request, res: Response) {
     try {
       const data = await OrgService.getAllOrgs();
-      res.json({ success: true, data });
+      res.json({ status: true, data, message: "All Organizarion" });
     } catch (err: any) {
-      res.status(500).json({ success: false, message: err.message });
+      res.status(500).json({ status: false, message: err.message });
     }
   }
 
@@ -19,12 +19,12 @@ export class OrgController {
       if (!data) {
         return res
           .status(404)
-          .json({ success: false, message: "Organization not found" });
+          .json({ status: false, message: "Organization not found" });
       }
 
-      res.json({ success: true, data });
+      res.json({ status: true, data, message: "organization fetched" });
     } catch (err: any) {
-      res.status(500).json({ success: false, message: err.message });
+      res.status(500).json({ status: false, message: err.message });
     }
   }
 
@@ -34,9 +34,9 @@ export class OrgController {
       const updatedData = req.body;
 
       const result = await OrgService.updateOrg(identity, updatedData);
-      res.json({ success: true, data: result });
+      res.json({ status: true, data: result, message:"organization updated" });
     } catch (err: any) {
-      res.status(500).json({ success: false, message: err.message });
+      res.status(500).json({ status: false, message: err.message });
     }
   }
 
@@ -45,9 +45,9 @@ export class OrgController {
       const identity = req.params.orgId;
 
       const result = await OrgService.deleteOrg(identity);
-      res.json({ success: true, message: "Organization deleted", result });
+      res.json({ status: true, message: "Organization deleted", data:result });
     } catch (err: any) {
-      res.status(500).json({ success: false, message: err.message });
+      res.status(500).json({ status: false, message: err.message });
     }
   }
 }

@@ -18,24 +18,6 @@ class EventService {
         });
         return event;
     }
-    static async getAllEventsService() {
-        const BASE_URL = process.env.BASE_URL ?? "";
-        const rawEvents = await prisma.event.findMany({
-            orderBy: { createdAt: "desc" },
-            include: {
-                org: {
-                    select: {
-                        organizationName: true,
-                    },
-                },
-            },
-        });
-        const events = rawEvents.map((e) => ({
-            ...e,
-            bannerImage: e.bannerImage ? `${BASE_URL}${e.bannerImage}` : null,
-        }));
-        return events;
-    }
     static async getEventById(orgId, eventId) {
         const BASE_URL = process.env.BASE_URL ?? "";
         const event = await prisma.event.findFirst({
@@ -103,6 +85,46 @@ class EventService {
             ...event,
             bannerImage: event.bannerImage ? `${BASE_URL}${event.bannerImage}` : null,
         }));
+    }
+    static async getAllEventsService() {
+        const BASE_URL = process.env.BASE_URL ?? "";
+        const rawEvents = await prisma.event.findMany({
+            orderBy: { createdAt: "desc" },
+            include: {
+                org: {
+                    select: {
+                        organizationName: true,
+                    },
+                },
+            },
+        });
+        const events = rawEvents.map((e) => ({
+            ...e,
+            bannerImage: e.bannerImage ? `${BASE_URL}${e.bannerImage}` : null,
+        }));
+        return events;
+    }
+    static async getSingleEventsService(eventId) {
+        const BASE_URL = process.env.BASE_URL ?? "";
+        const rawEvent = await prisma.event.findUnique({
+            where: { identity: eventId },
+            include: {
+                org: {
+                    select: {
+                        organizationName: true,
+                    },
+                },
+            },
+        });
+        if (!rawEvent)
+            return null;
+        const event = {
+            ...rawEvent,
+            bannerImage: rawEvent.bannerImage
+                ? `${BASE_URL}${rawEvent.bannerImage}`
+                : null,
+        };
+        return event;
     }
 }
 exports.EventService = EventService;

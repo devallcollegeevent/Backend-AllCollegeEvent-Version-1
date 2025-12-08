@@ -25,7 +25,7 @@ app.use(requestLogger_1.appLogger);
 app.use("/api/v1/auth", auth_routes_1.default);
 app.use("/api/v1", user_routes_1.default);
 app.use("/api/v1", org_routes_1.default);
-app.use("/api/v1/organizations", event_routes_1.default);
+app.use("/api/v1", event_routes_1.default);
 // testing API
 app.get("/", (req, res) => {
     res.send("Backend running with CommonJS ");

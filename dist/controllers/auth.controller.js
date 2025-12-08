@@ -21,7 +21,9 @@ class AuthController {
         try {
             const { email, password, type } = req.body;
             const data = await auth_service_1.AuthService.login(email, password, type);
-            res.status(200).json({ status: true, ...data });
+            res
+                .status(200)
+                .json({ status: true, ...data, message: "login successfully" });
         }
         catch (err) {
             res.status(400).json({ status: false, message: err.message });
@@ -48,7 +50,7 @@ class AuthController {
             const result = await auth_service_1.AuthService.forgotPassword(email);
             return res
                 .status(200)
-                .json({ data: result, status: true, message: "email received" });
+                .json({ data: result, status: true, message: "otp send to email" });
         }
         catch (err) {
             return res.status(400).json({ status: false, message: err.message });
@@ -58,7 +60,7 @@ class AuthController {
         try {
             const { email } = req.body;
             const result = await auth_service_1.AuthService.resendOtp(email);
-            return res.status(200).json({ data: result, status: true, message: "" });
+            return res.status(200).json({ data: result, status: true, message: "otp resend successfully" });
         }
         catch (err) {
             return res.status(400).json({ status: false, message: err.message });

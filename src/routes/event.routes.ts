@@ -5,26 +5,22 @@ import upload from "../middlewares/fileUpload";
 
 const router = Router();
 
-router.get("/:orgId/events", EventController.getOrgEvents);
-router.get(
-  "/:orgId/events/:eventId",
-  EventController.getEventById
-);
+router.get("/organizations/:orgId/events", EventController.getOrgEvents);
+router.get("/organizations/:orgId/events/:eventId", EventController.getEventById);
 router.post(
-  "/:orgId/events",
+  "/organizations/:orgId/events",
   upload.single("image"),
   EventController.createEvent
 );
 router.put(
-  "/:orgId/events/:eventId",
+  "/organizations/:orgId/events/:eventId",
   upload.single("image"),
   EventController.updateEvent
 );
-router.delete(
-  "/:orgId/events/:eventId",
-  EventController.deleteEvent
-);
+router.delete("/organizations/:orgId/events/:eventId", EventController.deleteEvent);
 
-router.get("/eve", authMiddleware, EventController.getAllEvents);
+// Public API
+router.get("/events", EventController.getAllEvents);
+router.get("/events/:eventId",EventController.getSingleEvent)
 
 export default router;

@@ -73,17 +73,32 @@ class AuthService {
     }
     static async login(email, password, type) {
         let user;
+        // FETCH USER / ORG
         if (type === "user") {
             user = await prisma.user.findUnique({ where: { email } });
+            if (!user)
+                throw new Error("Account not found");
+            // User validations
+            if (user.isDeleted)
+                throw new Error("Your account is deleted. Contact support.");
+            if (!user.isActive)
+                throw new Error("Your account is inactive. Contact admin.");
         }
         else if (type === "org") {
             user = await prisma.org.findUnique({ where: { domainEmail: email } });
+            if (!user)
+                throw new Error("Organization account not found");
+            // Org validations
+            if (user.isDeleted)
+                throw new Error("Organization account deleted. Contact support.");
+            if (!user.isVerified)
+                throw new Error("Your organization is not verified yet. Please contact admin.");
         }
-        if (!user)
-            throw new Error("Account not found");
+        // PASSWORD CHECK
         const ok = await (0, hash_1.comparePassword)(password, user.password);
         if (!ok)
             throw new Error("Invalid password");
+        // ROLE UUID FETCH
         let roleUUID = null;
         if (user.roleId) {
             const role = await prisma.role.findUnique({
@@ -92,10 +107,12 @@ class AuthService {
             });
             roleUUID = role?.idnty || null;
         }
+        // Prepare cleaned data
         const data = {
             ...user,
             roleId: roleUUID,
         };
+        // GENERATE TOKEN
         const token = (0, jwt_1.generateToken)({
             identity: user.identity,
             email: email,
