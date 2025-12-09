@@ -4,9 +4,28 @@ import { authMiddleware } from "../middlewares/authMiddleware";
 
 const router = Router();
 
-router.get("/users",  UserController.getAllUsers);
-router.get("/users/:userId",  UserController.getUserById);
+/**
+ * @route GET /api/v1/users
+ * @desc  Get all users
+ */
+router.get("/users", UserController.getAllUsers);
+
+/**
+ * @route GET /api/v1/users/:userId
+ * @desc  Get a single user by ID
+ */
+router.get("/users/:userId", UserController.getUserById);
+
+/**
+ * @route PUT /api/v1/user/:userId
+ * @desc  Update user details
+ */
 router.put("/user/:userId", UserController.updateUser);
+
+/**
+ * @route DELETE /api/v1/user/:userId
+ * @desc  Delete a user (soft delete or hard delete based on logic)
+ */
 router.delete("/user/:userId", UserController.deleteUser);
 
 export default router;

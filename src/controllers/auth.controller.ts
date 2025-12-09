@@ -8,13 +8,32 @@ export class AuthController {
 
       const user = await AuthService.signup(name, email, password, type, rest);
 
-      res.status(201).json({
+      return res.status(201).json({
         status: true,
         message: `${type} created successfully`,
         data: user,
       });
     } catch (err: any) {
-      res.status(400).json({ status: false, message: err.message });
+      const safeErrors = [
+        "Role not found in database",
+        "Email already registered",
+        "Invalid type",
+      ];
+
+      // Return known errors with status 200
+      if (safeErrors.includes(err.message)) {
+        return res.status(200).json({
+          status: false,
+          message: err.message,
+        });
+      }
+
+      // Unexpected errors → status 500
+      return res.status(500).json({
+        status: false,
+        message: "Internal server error",
+        error: err.message, // optional
+      });
     }
   }
 
@@ -23,11 +42,33 @@ export class AuthController {
       const { email, password, type } = req.body;
 
       const data = await AuthService.login(email, password, type);
-      res
+
+      return res
         .status(200)
         .json({ status: true, ...data, message: "login successfully" });
     } catch (err: any) {
-      res.status(400).json({ status: false, message: err.message });
+      const safeErrors = [
+        "Account not found",
+        "Your account is deleted. Contact support.",
+        "Your account is inactive. Contact admin.",
+        "Organization account not found",
+        "Organization account deleted. Contact support.",
+        "Your organization is not verified yet. Please contact admin.",
+        "Invalid password",
+      ];
+
+      if (safeErrors.includes(err.message)) {
+        return res.status(200).json({
+          status: false,
+          message: err.message,
+        });
+      }
+
+      return res.status(500).json({
+        status: false,
+        message: "Internal server error",
+        error: err.message, // optional: remove in production
+      });
     }
   }
 
@@ -68,7 +109,11 @@ export class AuthController {
 
       const result = await AuthService.resendOtp(email);
 
-      return res.status(200).json({ data: result, status: true, message: "otp resend successfully" });
+      return res.status(200).json({
+        data: result,
+        status: true,
+        message: "otp resend successfully",
+      });
     } catch (err: any) {
       return res.status(400).json({ status: false, message: err.message });
     }

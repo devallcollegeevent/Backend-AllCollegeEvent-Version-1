@@ -5,22 +5,59 @@ import upload from "../middlewares/fileUpload";
 
 const router = Router();
 
+/**
+ * @route GET /api/v1/organizations/:orgId/events
+ * @desc  Get all events of a specific organization
+ */
 router.get("/organizations/:orgId/events", EventController.getOrgEvents);
+
+/**
+ * @route GET /api/v1/organizations/:orgId/events/:eventId
+ * @desc  Get a single event under an organization
+ */
 router.get("/organizations/:orgId/events/:eventId", EventController.getEventById);
+
+/**
+ * @route POST /api/v1/organizations/:orgId/events
+ * @desc  Create a new event (with image upload)
+ */
 router.post(
   "/organizations/:orgId/events",
   upload.single("image"),
   EventController.createEvent
 );
+
+/**
+ * @route PUT /api/v1/organizations/:orgId/events/:eventId
+ * @desc  Update an event (with optional image upload)
+ */
 router.put(
   "/organizations/:orgId/events/:eventId",
   upload.single("image"),
   EventController.updateEvent
 );
-router.delete("/organizations/:orgId/events/:eventId", EventController.deleteEvent);
 
-// Public API
+/**
+ * @route DELETE /api/v1/organizations/:orgId/events/:eventId
+ * @desc  Delete an event
+ */
+router.delete(
+  "/organizations/:orgId/events/:eventId",
+  EventController.deleteEvent
+);
+
+/* ----------------------- PUBLIC EVENT ROUTES ----------------------- */
+
+/**
+ * @route GET /api/v1/events
+ * @desc  Get all public events
+ */
 router.get("/events", EventController.getAllEvents);
-router.get("/events/:eventId",EventController.getSingleEvent)
+
+/**
+ * @route GET /api/v1/events/:eventId
+ * @desc  Get a single public event
+ */
+router.get("/events/:eventId", EventController.getSingleEvent);
 
 export default router;

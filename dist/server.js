@@ -11,6 +11,7 @@ const auth_routes_1 = __importDefault(require("./routes/auth.routes"));
 const org_routes_1 = __importDefault(require("./routes/org.routes"));
 const user_routes_1 = __importDefault(require("./routes/user.routes"));
 const event_routes_1 = __importDefault(require("./routes/event.routes"));
+const admin_routes_1 = __importDefault(require("./routes/admin.routes"));
 const path_1 = __importDefault(require("path"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
@@ -26,6 +27,7 @@ app.use("/api/v1/auth", auth_routes_1.default);
 app.use("/api/v1", user_routes_1.default);
 app.use("/api/v1", org_routes_1.default);
 app.use("/api/v1", event_routes_1.default);
+app.use("/api/v1/admin", admin_routes_1.default);
 // testing API
 app.get("/", (req, res) => {
     res.send("Backend running with CommonJS ");
