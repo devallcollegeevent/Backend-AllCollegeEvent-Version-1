@@ -35,4 +35,10 @@ router.delete(
   AdminEventController.deleteEvent
 );
 
+router.put(
+  "/event/:eventId/status",
+  AdminEventController.updateEventStatus
+);
+
+
 export default router;

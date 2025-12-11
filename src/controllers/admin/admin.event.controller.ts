@@ -107,4 +107,25 @@ export class AdminEventController {
       res.status(500).json({ status: false, message: err.message });
     }
   }
+
+static async updateEventStatus(req: Request, res: Response) {
+  try {
+    const { eventId } = req.params;
+    const { status } = req.body; // new status from frontend
+
+    const updated = await AdminEventService.updateEventStatus(eventId, status);
+
+    return res.status(200).json({
+      status: true,
+      data: updated,
+      message: "Event status updated successfully",
+    });
+  } catch (err: any) {
+    return res.status(500).json({
+      status: false,
+      message: err.message || "Internal server error",
+    });
+  }
+}
+
 }

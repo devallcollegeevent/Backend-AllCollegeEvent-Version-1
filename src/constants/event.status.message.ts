@@ -1,0 +1,9 @@
+export const EVENT_STATUS = {
+  DRAFT: "DRAFT",
+  PENDING: "PENDING",
+  APPROVED: "APPROVED",
+  REJECTED: "REJECTED",
+  PRIVATE: "PRIVATE",
+};
+
+export const EVENT_STATUS_LIST = Object.values(EVENT_STATUS);

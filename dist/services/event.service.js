@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EventService = void 0;
 const prisma = require("../config/db.config");
+const event_status_message_1 = require("../constants/event.status.message");
 class EventService {
     static async createEventService(data) {
         // creating new event record in database
@@ -78,6 +79,7 @@ class EventService {
         const events = await prisma.event.findMany({
             where: {
                 orgIdentity: identity,
+                status: "APPROVED",
             },
             orderBy: {
                 createdAt: "desc",
@@ -98,8 +100,11 @@ class EventService {
     }
     static async getAllEventsService() {
         const BASE_URL = process.env.BASE_URL ?? "";
-        // fetching all events across all organizations
+        // fetch ONLY approved events
         const rawEvents = await prisma.event.findMany({
+            where: {
+                status: "APPROVED",
+            },
             orderBy: { createdAt: "desc" },
             include: {
                 org: {
@@ -109,7 +114,7 @@ class EventService {
                 },
             },
         });
-        // converting image paths to include complete URL
+        // map full image path
         const events = rawEvents.map((e) => ({
             ...e,
             bannerImage: e.bannerImage ? `${BASE_URL}${e.bannerImage}` : null,
@@ -140,6 +145,9 @@ class EventService {
                 : null,
         };
         return event;
+    }
+    static getAllStatuses() {
+        return event_status_message_1.EVENT_STATUS_LIST;
     }
 }
 exports.EventService = EventService;

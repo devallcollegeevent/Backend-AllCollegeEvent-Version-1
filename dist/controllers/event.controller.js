@@ -8,10 +8,16 @@ class EventController {
         try {
             const identity = String(req.params.orgId);
             const events = await event_service_1.EventService.getEventsByOrg(identity);
-            res.json({ status: true, data: events, message: event_message_1.EVENT_MESSAGES.EVENTS_FETCHED });
+            res.json({
+                status: true,
+                data: events,
+                message: event_message_1.EVENT_MESSAGES.EVENTS_FETCHED,
+            });
         }
         catch (err) {
-            res.status(500).json({ status: false, message: event_message_1.EVENT_MESSAGES.INTERNAL_ERROR });
+            res
+                .status(500)
+                .json({ status: false, message: event_message_1.EVENT_MESSAGES.INTERNAL_ERROR });
         }
     }
     static async getEventById(req, res) {
@@ -24,10 +30,16 @@ class EventController {
                     message: event_message_1.EVENT_MESSAGES.EVENT_NOT_FOUND,
                 });
             }
-            res.json({ status: true, data: event, message: event_message_1.EVENT_MESSAGES.EVENT_FETCHED });
+            res.json({
+                status: true,
+                data: event,
+                message: event_message_1.EVENT_MESSAGES.EVENT_FETCHED,
+            });
         }
         catch (err) {
-            res.status(500).json({ status: false, message: event_message_1.EVENT_MESSAGES.INTERNAL_ERROR });
+            res
+                .status(500)
+                .json({ status: false, message: event_message_1.EVENT_MESSAGES.INTERNAL_ERROR });
         }
     }
     static async createEvent(req, res) {
@@ -45,10 +57,16 @@ class EventController {
                 image,
                 venue,
             });
-            res.status(200).json({ status: true, data: event, message: event_message_1.EVENT_MESSAGES.EVENT_CREATED });
+            res.status(200).json({
+                status: true,
+                data: event,
+                message: event_message_1.EVENT_MESSAGES.EVENT_CREATED,
+            });
         }
         catch (err) {
-            res.status(400).json({ status: false, message: event_message_1.EVENT_MESSAGES.INTERNAL_ERROR });
+            res
+                .status(400)
+                .json({ status: false, message: event_message_1.EVENT_MESSAGES.INTERNAL_ERROR });
         }
     }
     static async updateEvent(req, res) {
@@ -59,20 +77,32 @@ class EventController {
                 ...req.body,
                 ...(image && { bannerImage: image }),
             });
-            res.json({ status: true, data: result, message: event_message_1.EVENT_MESSAGES.EVENT_UPDATED });
+            res.json({
+                status: true,
+                data: result,
+                message: event_message_1.EVENT_MESSAGES.EVENT_UPDATED,
+            });
         }
         catch (err) {
-            res.status(500).json({ status: false, message: event_message_1.EVENT_MESSAGES.INTERNAL_ERROR });
+            res
+                .status(500)
+                .json({ status: false, message: event_message_1.EVENT_MESSAGES.INTERNAL_ERROR });
         }
     }
     static async deleteEvent(req, res) {
         try {
             const { orgId, eventId } = req.params;
             const deleted = await event_service_1.EventService.deleteEvent(orgId, eventId);
-            res.json({ status: true, data: deleted, message: event_message_1.EVENT_MESSAGES.EVENT_DELETED });
+            res.json({
+                status: true,
+                data: deleted,
+                message: event_message_1.EVENT_MESSAGES.EVENT_DELETED,
+            });
         }
         catch (err) {
-            res.status(500).json({ status: false, message: event_message_1.EVENT_MESSAGES.INTERNAL_ERROR });
+            res
+                .status(500)
+                .json({ status: false, message: event_message_1.EVENT_MESSAGES.INTERNAL_ERROR });
         }
     }
     static async getAllEvents(req, res) {
@@ -85,7 +115,9 @@ class EventController {
             });
         }
         catch (err) {
-            res.status(500).json({ status: false, message: event_message_1.EVENT_MESSAGES.INTERNAL_ERROR });
+            res
+                .status(500)
+                .json({ status: false, message: event_message_1.EVENT_MESSAGES.INTERNAL_ERROR });
         }
     }
     static async getSingleEvent(req, res) {
@@ -99,7 +131,26 @@ class EventController {
             });
         }
         catch (err) {
-            res.status(500).json({ status: false, message: event_message_1.EVENT_MESSAGES.INTERNAL_ERROR });
+            res
+                .status(500)
+                .json({ status: false, message: event_message_1.EVENT_MESSAGES.INTERNAL_ERROR });
+        }
+    }
+    static async getStatuses(req, res) {
+        try {
+            const statuses = event_service_1.EventService.getAllStatuses();
+            return res.status(200).json({
+                status: true,
+                data: statuses,
+                message: "Event status list fetched",
+            });
+        }
+        catch (err) {
+            return res.status(500).json({
+                status: false,
+                message: "Internal Server Error",
+                error: err.message,
+            });
         }
     }
 }

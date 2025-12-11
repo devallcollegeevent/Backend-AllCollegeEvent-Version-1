@@ -8,9 +8,15 @@ export class EventController {
       const identity = String(req.params.orgId);
       const events = await EventService.getEventsByOrg(identity);
 
-      res.json({ status: true, data: events, message: EVENT_MESSAGES.EVENTS_FETCHED });
+      res.json({
+        status: true,
+        data: events,
+        message: EVENT_MESSAGES.EVENTS_FETCHED,
+      });
     } catch (err) {
-      res.status(500).json({ status: false, message: EVENT_MESSAGES.INTERNAL_ERROR });
+      res
+        .status(500)
+        .json({ status: false, message: EVENT_MESSAGES.INTERNAL_ERROR });
     }
   }
 
@@ -26,16 +32,23 @@ export class EventController {
         });
       }
 
-      res.json({ status: true, data: event, message: EVENT_MESSAGES.EVENT_FETCHED });
+      res.json({
+        status: true,
+        data: event,
+        message: EVENT_MESSAGES.EVENT_FETCHED,
+      });
     } catch (err) {
-      res.status(500).json({ status: false, message: EVENT_MESSAGES.INTERNAL_ERROR });
+      res
+        .status(500)
+        .json({ status: false, message: EVENT_MESSAGES.INTERNAL_ERROR });
     }
   }
 
   static async createEvent(req: Request, res: Response) {
     try {
       const { orgId } = req.params;
-      const { event_title, description, event_date, event_time, mode, venue } = req.body;
+      const { event_title, description, event_date, event_time, mode, venue } =
+        req.body;
 
       const image = req.file ? `/uploads/${req.file.filename}` : null;
 
@@ -50,9 +63,15 @@ export class EventController {
         venue,
       });
 
-      res.status(200).json({ status: true, data: event, message: EVENT_MESSAGES.EVENT_CREATED });
+      res.status(200).json({
+        status: true,
+        data: event,
+        message: EVENT_MESSAGES.EVENT_CREATED,
+      });
     } catch (err) {
-      res.status(400).json({ status: false, message: EVENT_MESSAGES.INTERNAL_ERROR });
+      res
+        .status(400)
+        .json({ status: false, message: EVENT_MESSAGES.INTERNAL_ERROR });
     }
   }
 
@@ -66,9 +85,15 @@ export class EventController {
         ...(image && { bannerImage: image }),
       });
 
-      res.json({ status: true, data: result, message: EVENT_MESSAGES.EVENT_UPDATED });
+      res.json({
+        status: true,
+        data: result,
+        message: EVENT_MESSAGES.EVENT_UPDATED,
+      });
     } catch (err) {
-      res.status(500).json({ status: false, message: EVENT_MESSAGES.INTERNAL_ERROR });
+      res
+        .status(500)
+        .json({ status: false, message: EVENT_MESSAGES.INTERNAL_ERROR });
     }
   }
 
@@ -78,9 +103,15 @@ export class EventController {
 
       const deleted = await EventService.deleteEvent(orgId, eventId);
 
-      res.json({ status: true, data: deleted, message: EVENT_MESSAGES.EVENT_DELETED });
+      res.json({
+        status: true,
+        data: deleted,
+        message: EVENT_MESSAGES.EVENT_DELETED,
+      });
     } catch (err) {
-      res.status(500).json({ status: false, message: EVENT_MESSAGES.INTERNAL_ERROR });
+      res
+        .status(500)
+        .json({ status: false, message: EVENT_MESSAGES.INTERNAL_ERROR });
     }
   }
 
@@ -94,7 +125,9 @@ export class EventController {
         message: EVENT_MESSAGES.ALL_EVENTS_FETCHED,
       });
     } catch (err) {
-      res.status(500).json({ status: false, message: EVENT_MESSAGES.INTERNAL_ERROR });
+      res
+        .status(500)
+        .json({ status: false, message: EVENT_MESSAGES.INTERNAL_ERROR });
     }
   }
 
@@ -110,7 +143,27 @@ export class EventController {
         message: EVENT_MESSAGES.EVENT_FETCHED,
       });
     } catch (err) {
-      res.status(500).json({ status: false, message: EVENT_MESSAGES.INTERNAL_ERROR });
+      res
+        .status(500)
+        .json({ status: false, message: EVENT_MESSAGES.INTERNAL_ERROR });
+    }
+  }
+
+  static async getStatuses(req: Request, res: Response) {
+    try {
+      const statuses = EventService.getAllStatuses();
+
+      return res.status(200).json({
+        status: true,
+        data: statuses,
+        message: "Event status list fetched",
+      });
+    } catch (err: any) {
+      return res.status(500).json({
+        status: false,
+        message: "Internal Server Error",
+        error: err.message,
+      });
     }
   }
 }

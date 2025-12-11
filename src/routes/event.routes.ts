@@ -77,4 +77,6 @@ router.get(
   EventController.getSingleEvent
 );
 
+router.get("/event/statuses", EventController.getStatuses);
+
 export default router;

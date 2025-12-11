@@ -1,5 +1,6 @@
 const prisma = require("../config/db.config");
 import { EventType } from "../types/type";
+import { EVENT_STATUS_LIST } from "../constants/event.status.message";
 
 export class EventService {
   static async createEventService(data: {
@@ -97,6 +98,7 @@ export class EventService {
     const events = await prisma.event.findMany({
       where: {
         orgIdentity: identity,
+        status: "APPROVED", 
       },
       orderBy: {
         createdAt: "desc",
@@ -120,8 +122,11 @@ export class EventService {
   static async getAllEventsService(): Promise<EventType[]> {
     const BASE_URL = process.env.BASE_URL ?? "";
 
-    // fetching all events across all organizations
+    // fetch ONLY approved events
     const rawEvents = await prisma.event.findMany({
+      where: {
+        status: "APPROVED", 
+      },
       orderBy: { createdAt: "desc" },
       include: {
         org: {
@@ -132,7 +137,7 @@ export class EventService {
       },
     });
 
-    // converting image paths to include complete URL
+    // map full image path
     const events: EventType[] = rawEvents.map((e: EventType) => ({
       ...e,
       bannerImage: e.bannerImage ? `${BASE_URL}${e.bannerImage}` : null,
@@ -171,4 +176,10 @@ export class EventService {
 
     return event;
   }
+
+  static getAllStatuses() {
+    return EVENT_STATUS_LIST;
+  }
+
+  
 }

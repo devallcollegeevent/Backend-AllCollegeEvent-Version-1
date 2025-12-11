@@ -1,5 +1,6 @@
 const prisma = require("../../config/db.config");
 import { EventType } from "../../types/type";
+import { EVENT_STATUS_LIST } from "../../constants/event.status.message";
 
 export default class AdminEventService {
   static async getAllEvents() {
@@ -98,6 +99,29 @@ export default class AdminEventService {
     //remove event under an organization
     return prisma.event.deleteMany({
       where: { identity: eventId, orgIdentity: orgId },
+    });
+  }
+
+  static async updateEventStatus(eventId: string, status: string) {
+    // Validate incoming status
+    if (!EVENT_STATUS_LIST.includes(status)) {
+      throw new Error("Invalid event status");
+    }
+
+    const event = await prisma.event.findUnique({
+      where: { identity: eventId },
+    });
+
+    if (!event) {
+      throw new Error("Event not found");
+    }
+
+    return prisma.event.update({
+      where: { identity: eventId },
+      data: {
+        status,
+        publishedAt: status === "APPROVED" ? new Date() : null,
+      },
     });
   }
 }

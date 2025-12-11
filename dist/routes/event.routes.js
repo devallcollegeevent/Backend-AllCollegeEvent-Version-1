@@ -45,4 +45,5 @@ router.get("/events", event_controller_1.EventController.getAllEvents);
  * @desc  Get a single public event
  */
 router.get("/events/:eventId", (0, validate_1.validate)(event_validation_1.eventValidation.getSinglePublicEvent), event_controller_1.EventController.getSingleEvent);
+router.get("/event/statuses", event_controller_1.EventController.getStatuses);
 exports.default = router;

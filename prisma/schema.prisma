@@ -138,8 +138,7 @@ model Event {
   updatedAt   DateTime  @updatedAt
 
   status EventStatus @default(PENDING)
-  publishedAt DateTime?
-
+  
   org          Org     @relation(fields: [orgIdentity], references: [identity])
   User         User?   @relation(fields: [userIdentity], references: [identity])
   userIdentity String?
