@@ -5,7 +5,6 @@ export class OrgService {
   static async getAllOrgs() {
     // fetching all organizations that are not deleted
     return prisma.org.findMany({
-      where: { isDeleted: false },
       orderBy: { createdAt: "desc" },
     });
   }
