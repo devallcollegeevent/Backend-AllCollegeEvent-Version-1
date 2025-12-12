@@ -23,7 +23,7 @@ router.get("/organizations/:orgId", validate(orgValidation.getSingle),AdminOrgCo
  * @route GET /api/v1/organizations/:orgId
  * @desc  Get details of a single organization by ID
  */
-router.post("/organization", validate(orgValidation.getSingle),AdminOrgController.createOrg);
+router.post("/organization",AdminOrgController.createOrg);
 
 /**
  * @route PUT /api/v1/organizations/:orgId

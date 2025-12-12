@@ -34,6 +34,15 @@ class EventService {
                 org: {
                     select: {
                         organizationName: true,
+                        organizationCategory: true,
+                        city: true,
+                        state: true,
+                        country: true,
+                        profileImage: true,
+                        whatsapp: true,
+                        instagram: true,
+                        linkedIn: true, // <-- FIXED (case sensitive)
+                        logoUrl: true,
                     },
                 },
             },
@@ -78,7 +87,8 @@ class EventService {
         // fetching all events created by a specific organization
         const events = await prisma.event.findMany({
             where: {
-                orgIdentity: identity
+                orgIdentity: identity,
+                status: "APPROVED",
             },
             orderBy: {
                 createdAt: "desc",
@@ -87,6 +97,15 @@ class EventService {
                 org: {
                     select: {
                         organizationName: true,
+                        organizationCategory: true,
+                        city: true,
+                        state: true,
+                        country: true,
+                        profileImage: true,
+                        whatsapp: true,
+                        instagram: true,
+                        linkedIn: true, // <-- FIXED (case sensitive)
+                        logoUrl: true,
                     },
                 },
             },
@@ -109,6 +128,15 @@ class EventService {
                 org: {
                     select: {
                         organizationName: true,
+                        organizationCategory: true,
+                        city: true,
+                        state: true,
+                        country: true,
+                        profileImage: true,
+                        whatsapp: true,
+                        instagram: true,
+                        linkedIn: true, // <-- FIXED (case sensitive)
+                        logoUrl: true,
                     },
                 },
             },
@@ -129,6 +157,15 @@ class EventService {
                 org: {
                     select: {
                         organizationName: true,
+                        organizationCategory: true,
+                        city: true,
+                        state: true,
+                        country: true,
+                        profileImage: true,
+                        whatsapp: true,
+                        instagram: true,
+                        linkedIn: true, // <-- FIXED (case sensitive)
+                        logoUrl: true,
                     },
                 },
             },

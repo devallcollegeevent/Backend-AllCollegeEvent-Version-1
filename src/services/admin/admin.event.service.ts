@@ -4,19 +4,28 @@ import { EVENT_STATUS_LIST } from "../../constants/event.status.message";
 
 export default class AdminEventService {
   static async getAllEvents() {
-    //fetch every event from the system
     const BASE_URL = process.env.BASE_URL ?? "";
 
     const events = await prisma.event.findMany({
       orderBy: { createdAt: "desc" },
       include: {
         org: {
-          select: { organizationName: true },
+          select: {
+            organizationName: true,
+            organizationCategory: true,
+            city: true,
+            state: true,
+            country: true,
+            profileImage: true,
+            whatsapp: true,
+            instagram: true,
+            linkedIn: true, // <-- FIXED (case sensitive)
+            logoUrl: true,
+          },
         },
       },
     });
 
-    //attach full URL to event images
     return events.map((e: EventType) => ({
       ...e,
       bannerImage: e.bannerImage ? `${BASE_URL}${e.bannerImage}` : null,
@@ -31,7 +40,18 @@ export default class AdminEventService {
       where: { orgIdentity: orgId },
       include: {
         org: {
-          select: { organizationName: true },
+          select: {
+            organizationName: true,
+            organizationCategory: true,
+            city: true,
+            state: true,
+            country: true,
+            profileImage: true,
+            whatsapp: true,
+            instagram: true,
+            linkedIn: true, // <-- FIXED (case sensitive)
+            logoUrl: true,
+          },
         },
       },
       orderBy: { createdAt: "desc" },
@@ -50,7 +70,20 @@ export default class AdminEventService {
     const event = await prisma.event.findFirst({
       where: { identity: eventId, orgIdentity: orgId },
       include: {
-        org: { select: { organizationName: true } },
+        org: {
+          select: {
+            organizationName: true,
+            organizationCategory: true,
+            city: true,
+            state: true,
+            country: true,
+            profileImage: true,
+            whatsapp: true,
+            instagram: true,
+            linkedIn: true, // <-- FIXED (case sensitive)
+            logoUrl: true,
+          },
+        },
       },
     });
 

@@ -28,7 +28,7 @@ export default class AdminUserService {
       prisma.user.count(),
     ]);
 
-    // returning paginated response
+    // returning paginated res /ponse
     return {
       data: rows,
       meta: {

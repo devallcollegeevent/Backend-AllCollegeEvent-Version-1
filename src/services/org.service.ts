@@ -48,7 +48,6 @@ export class OrgService {
     });
   }
 
-  
   static async getEventsByOrg(identity: string): Promise<EventType[]> {
     const BASE_URL = process.env.BASE_URL ?? "";
 
@@ -76,7 +75,7 @@ export class OrgService {
     }));
   }
 
-    static async getEventsByOrganization(identity: string): Promise<EventType[]> {
+  static async getEventsByOrganization(identity: string): Promise<EventType[]> {
     const BASE_URL = process.env.BASE_URL ?? "";
 
     // fetching all events created by a specific organization

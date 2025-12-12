@@ -16,7 +16,7 @@ export const userValidation = {
 
   update: {
     params: Joi.object({
-      userId: Joi.string().uuid().required(),
+      userID: Joi.string().uuid().required(),
     }),
     body: Joi.object({
       password: Joi.string().min(6),
@@ -32,13 +32,13 @@ export const userValidation = {
 
   getSingle: {
     params: Joi.object({
-      userId: Joi.string().uuid().required(),
+      userID: Joi.string().uuid().required(),
     }),
   },
 
   deleteUser: {
     params: Joi.object({
-      userId: Joi.string().uuid().required(),
+      userID: Joi.string().uuid().required(),
     }),
   },
 };
