@@ -1,9 +1,24 @@
 const bcrypt = require("bcrypt")
 
-export const hashPassword = async (pwd: string) => {
-  return await bcrypt.hash(pwd, 10);
+/**
+ * Hash a plain text password
+ * @param pwd - plain password string
+ * @returns hashed password
+ */
+export const hashPassword = async (pwd: string): Promise<string> => {
+  const saltRounds = 10;
+  return bcrypt.hash(pwd, saltRounds);
 };
 
-export const comparePassword = async (pwd: string, hashed: string) => {
-  return await bcrypt.compare(pwd, hashed);
+/**
+ * Compare plain password with hashed password
+ * @param pwd - plain password string
+ * @param hashed - hashed password from DB
+ * @returns true if password matches, else false
+ */
+export const comparePassword = async (
+  pwd: string,
+  hashed: string
+): Promise<boolean> => {
+  return bcrypt.compare(pwd, hashed);
 };

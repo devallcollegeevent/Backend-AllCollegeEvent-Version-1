@@ -22,7 +22,7 @@ export const validate =
         }
       }
 
-      // 🔹 validate request params
+      // validate request params
       if (schema.params) {
         const { error } = schema.params.validate(req.params, {
           abortEarly: false,
@@ -36,7 +36,7 @@ export const validate =
         }
       }
 
-      // 🔹 validate request query
+      // validate request query
       if (schema.query) {
         const { error } = schema.query.validate(req.query, {
           abortEarly: false,
@@ -50,10 +50,10 @@ export const validate =
         }
       }
 
-      // ✅ all validations passed
+      // all validations passed
       next();
     } catch (err) {
-      // ❌ only real server error → 500
+      // only real server error → 500
       return res.status(500).json({
         status: false,
         message: VALIDATION_MESSAGES.INTERNAL_VALIDATION_ERROR,

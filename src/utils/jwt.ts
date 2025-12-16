@@ -1,11 +1,36 @@
+import { JwtPayload } from "jsonwebtoken";
+
 const jwt = require("jsonwebtoken");
 
-const SECRET = process.env.JWT_SECRET
+/**
+ * JWT secret key
+ * - Must be defined in environment variables
+ */
+const SECRET = process.env.JWT_SECRET as string;
 
-export const generateToken = (payload: any) => {
-  return jwt.sign({ data: payload }, SECRET, { expiresIn: "1d" });
+if (!SECRET) {
+  throw new Error("JWT_SECRET is not defined in environment variables");
+}
+
+/**
+ * Generate JWT token
+ * @param payload - data to embed inside the token
+ * @returns signed JWT token
+ */
+export const generateToken = (payload: unknown): string => {
+  return jwt.sign(
+    { data: payload },
+    SECRET,
+    { expiresIn: "1d" }
+  );
 };
 
-export const verifyToken = (token: string) => {
+/**
+ * Verify JWT token
+ * @param token - JWT token string
+ * @returns decoded token payload
+ * @throws if token is invalid or expired
+ */
+export const verifyToken = (token: string): JwtPayload | string => {
   return jwt.verify(token, SECRET);
 };
