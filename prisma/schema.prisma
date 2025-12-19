@@ -24,13 +24,13 @@ model User {
 
   name     String
   email    String @unique
-  password String 
+  password String
 
   phone        String?
   city         String?
   state        String?
   country      String?
-  profileImage String? 
+  profileImage String?
 
   isDeleted   Boolean   @default(false)
   isActive    Boolean?  @default(true)
@@ -99,8 +99,10 @@ model OTP {
   expiresAt DateTime?
   createdAt DateTime  @default(now())
 
-  usedAt    DateTime? // NEW
-  ipAddress String? // NEW
+  usedAt    DateTime?
+  ipAddress String?
+
+  updatedAt DateTime? @updatedAt
 
   userIdentity String?
   user         User?   @relation(fields: [userIdentity], references: [identity], onDelete: Cascade)

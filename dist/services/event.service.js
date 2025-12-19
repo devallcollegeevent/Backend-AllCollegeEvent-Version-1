@@ -13,7 +13,7 @@ class EventService {
         const events = await prisma.event.findMany({
             where: {
                 orgIdentity: identity,
-                status: "APPROVED",
+                status: event_message_1.EVENT_MESSAGES.APPROVED,
             },
             orderBy: {
                 createdAt: "desc",
@@ -128,7 +128,7 @@ class EventService {
         // fetch ONLY approved events
         const rawEvents = await prisma.event.findMany({
             where: {
-                status: "APPROVED",
+                status: event_message_1.EVENT_MESSAGES.APPROVED,
             },
             orderBy: { createdAt: "desc" },
             include: {

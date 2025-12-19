@@ -44,7 +44,7 @@ export class UserController {
 
       // Handle user not found
       if (!user) {
-        return res.status(404).json({
+        return res.status(200).json({
           status: false,
           message: USER_MESSAGES.USER_NOT_FOUND,
         });

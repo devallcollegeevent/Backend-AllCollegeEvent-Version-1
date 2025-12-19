@@ -1,34 +1,37 @@
 const prisma = require("../../config/db.config");
 import { hashPassword } from "../../utils/hash";
+import { ADMIN_ORG_MESSAGES } from "../../constants/admin.org.message";
 
 export default class AdminOrgService {
-  
+
   static async getAllOrgs() {
-    //fetch all non-deleted organizations for admin panel
+    // fetch all organizations (admin view)
     return prisma.org.findMany({
       orderBy: { createdAt: "desc" },
     });
   }
 
   static async getOrgById(identity: string) {
-    //retrieve a single organization by identity
+    // retrieve a single organization by identity
     return prisma.org.findUnique({
       where: { identity },
     });
   }
 
   static async createOrg(payload: any) {
-    //check if organization already exists with this domain email
+    // check if organization already exists
     const exists = await prisma.org.findUnique({
       where: { domainEmail: payload.domainEmail },
     });
 
-    if (exists) throw new Error("Organization already exists");
+    if (exists) {
+      throw new Error(ADMIN_ORG_MESSAGES.ORG_ALREADY_EXISTS);
+    }
 
-    //encrypting organization login password
+    // encrypt password
     payload.password = await hashPassword(payload.password);
 
-    //creating new organization with admin info
+    // create organization
     return prisma.org.create({
       data: {
         domainEmail: payload.domainEmail,
@@ -39,14 +42,13 @@ export default class AdminOrgService {
         state: payload.state,
         city: payload.city,
 
-        //mark that admin created this organization
+        // mark admin-created org
         isAdminCreated: true,
       },
     });
   }
 
   static async updateOrg(identity: string, data: any) {
-    //updating organization details from admin panel
     return prisma.org.update({
       where: { identity },
       data,
@@ -54,7 +56,7 @@ export default class AdminOrgService {
   }
 
   static async deleteOrg(identity: string) {
-    //soft-delete organization instead of permanent delete
+    // soft delete
     return prisma.org.update({
       where: { identity },
       data: { isDeleted: true },

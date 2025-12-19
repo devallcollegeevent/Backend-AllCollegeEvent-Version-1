@@ -1,137 +1,169 @@
 import { Request, Response } from "express";
 import AdminEventService from "../../services/admin/admin.event.service";
+import { ADMIN_EVENT_MESSAGES } from "../../constants/admin.event.message";
 
 export class AdminEventController {
+
   static async getAllEvents(req: Request, res: Response) {
     try {
-      //fetch all events across all organizations
       const events = await AdminEventService.getAllEvents();
-      res.json({ status: true, data: events, message: "All events fetched" });
+      return res.status(200).json({
+        status: true,
+        data: events,
+        message: ADMIN_EVENT_MESSAGES.ALL_EVENTS_FETCHED,
+      });
     } catch (err: any) {
-      //error fetching all events
-      res.status(500).json({ status: false, message: err.message });
+      return res.status(500).json({
+        status: false,
+        message: ADMIN_EVENT_MESSAGES.INTERNAL_SERVER_ERROR,
+        error: err.message,
+      });
     }
   }
 
   static async getEventsByOrg(req: Request, res: Response) {
     try {
-      //extract organization id from params
       const { orgId } = req.params;
-
-      //fetch all events for this organization
       const events = await AdminEventService.getEventsByOrg(orgId);
 
-      res.json({ status: true, data: events, message: "Org events fetched" });
+      return res.status(200).json({
+        status: true,
+        data: events,
+        message: ADMIN_EVENT_MESSAGES.ORG_EVENTS_FETCHED,
+      });
     } catch (err: any) {
-      //error during fetch
-      res.status(500).json({ status: false, message: err.message });
+      return res.status(500).json({
+        status: false,
+        message: ADMIN_EVENT_MESSAGES.INTERNAL_SERVER_ERROR,
+        error: err.message,
+      });
     }
   }
 
   static async getEventById(req: Request, res: Response) {
     try {
-      //extract organization id and event id
       const { orgId, eventId } = req.params;
-
-      //fetch specific event
       const event = await AdminEventService.getEventById(orgId, eventId);
 
       if (!event) {
-        return res
-          .status(404)
-          .json({ status: false, message: "Event not found" });
+        return res.status(200).json({
+          status: false,
+          message: ADMIN_EVENT_MESSAGES.EVENT_NOT_FOUND,
+        });
       }
 
-      res.json({ status: true, data: event, message: "Event fetched" });
+      return res.status(200).json({
+        status: true,
+        data: event,
+        message: ADMIN_EVENT_MESSAGES.EVENT_FETCHED,
+      });
     } catch (err: any) {
-      //error retrieving event
-      res.status(500).json({ status: false, message: err.message });
+      return res.status(500).json({
+        status: false,
+        message: ADMIN_EVENT_MESSAGES.INTERNAL_SERVER_ERROR,
+        error: err.message,
+      });
     }
   }
 
   static async createEvent(req: Request, res: Response) {
     try {
-      //extract organization ID from params
       const { orgId } = req.params;
-
-      //extract event data from request body
       const data = req.body;
-
-      //handle image upload
       const image = req.file ? `/uploads/${req.file.filename}` : null;
 
-      //creating event
       const event = await AdminEventService.createEvent(orgId, {
         ...data,
         image,
       });
 
-      res.json({ status: true, data: event, message: "Event created" });
+      return res.status(200).json({
+        status: true,
+        data: event,
+        message: ADMIN_EVENT_MESSAGES.EVENT_CREATED,
+      });
     } catch (err: any) {
-      //error while creating event
-      res.status(400).json({ status: false, message: err.message });
+      return res.status(500).json({
+        status: false,
+        message: ADMIN_EVENT_MESSAGES.INTERNAL_SERVER_ERROR,
+        error: err.message,
+      });
     }
   }
 
   static async updateEvent(req: Request, res: Response) {
     try {
-      //extract IDs
       const { orgId, eventId } = req.params;
-
-      //manage image upload
       const image = req.file ? `/uploads/${req.file.filename}` : undefined;
-
-      //prepare update payload
       const payload = { ...req.body, ...(image && { bannerImage: image }) };
 
-      //update event
-      const event = await AdminEventService.updateEvent(
-        orgId,
-        eventId,
-        payload
-      );
+      const event = await AdminEventService.updateEvent(orgId, eventId, payload);
 
-      res.json({ status: true, data: event, message: "Event updated" });
+      return res.status(200).json({
+        status: true,
+        data: event,
+        message: ADMIN_EVENT_MESSAGES.EVENT_UPDATED,
+      });
     } catch (err: any) {
-      //update failed
-      res.status(500).json({ status: false, message: err.message });
+      return res.status(500).json({
+        status: false,
+        message: ADMIN_EVENT_MESSAGES.INTERNAL_SERVER_ERROR,
+        error: err.message,
+      });
     }
   }
 
   static async deleteEvent(req: Request, res: Response) {
     try {
-      //extract event identifiers
       const { orgId, eventId } = req.params;
-
-      //delete event
       const deleted = await AdminEventService.deleteEvent(orgId, eventId);
 
-      res.json({ status: true, data: deleted, message: "Event deleted" });
+      return res.status(200).json({
+        status: true,
+        data: deleted,
+        message: ADMIN_EVENT_MESSAGES.EVENT_DELETED,
+      });
     } catch (err: any) {
-      //failure deleting event
-      res.status(500).json({ status: false, message: err.message });
+      return res.status(500).json({
+        status: false,
+        message: ADMIN_EVENT_MESSAGES.INTERNAL_SERVER_ERROR,
+        error: err.message,
+      });
     }
   }
 
   static async updateEventStatus(req: Request, res: Response) {
     try {
       const { eventId } = req.params;
-      const { status } = req.body; // new status from frontend
+      const { status } = req.body;
 
-      const updated = await AdminEventService.updateEventStatus(
-        eventId,
-        status
-      );
+      const updated = await AdminEventService.updateEventStatus(eventId, status);
 
       return res.status(200).json({
         status: true,
         data: updated,
-        message: "Event status updated successfully",
+        message: ADMIN_EVENT_MESSAGES.EVENT_STATUS_UPDATED,
       });
     } catch (err: any) {
+
+      // SAFE business errors
+      const safeErrors = [
+        ADMIN_EVENT_MESSAGES.INVALID_EVENT_STATUS,
+        ADMIN_EVENT_MESSAGES.EVENT_NOT_FOUND,
+      ];
+
+      if (safeErrors.includes(err.message)) {
+        return res.status(200).json({
+          status: false,
+          message: err.message,
+        });
+      }
+
+      // System errors
       return res.status(500).json({
         status: false,
-        message: err.message || "Internal server error",
+        message: ADMIN_EVENT_MESSAGES.INTERNAL_SERVER_ERROR,
+        error: err.message,
       });
     }
   }

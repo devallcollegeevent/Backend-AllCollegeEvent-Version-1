@@ -22,4 +22,6 @@ export const EVENT_MESSAGES = {
 
   // Errors
   INTERNAL_ERROR: "Internal server error",
+
+  APPROVED:"APPROVED"
 };

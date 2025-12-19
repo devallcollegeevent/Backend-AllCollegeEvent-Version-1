@@ -1,100 +1,129 @@
 import { Request, Response } from "express";
 import AdminUserService from "../../services/admin/admin.user.service";
+import { ADMIN_USER_MESSAGES } from "../../constants/admin.user.message";
 
 export class AdminUserController {
+
   static async listUsers(req: Request, res: Response) {
     try {
-      // parsing pagination values (page & limit)
       const page = req.query.page ? Number(req.query.page) : 1;
       const limit = req.query.limit ? Number(req.query.limit) : 20;
 
-      // fetching paginated list of users
-      const result = await  AdminUserService.listUsers(page, limit);
+      const result = await AdminUserService.listUsers(page, limit);
 
-      // returning list of users
-      return res.status(200).json({ status: true, data:result, message:"User list fetched" });
+      return res.status(200).json({
+        status: true,
+        data: result,
+        message: ADMIN_USER_MESSAGES.USER_LIST_FETCHED,
+      });
     } catch (err: any) {
-      // server error during user listing
-      return res.status(500).json({ status: false, message: err.message });
+      return res.status(500).json({
+        status: false,
+        message: ADMIN_USER_MESSAGES.INTERNAL_SERVER_ERROR,
+        error: err.message,
+      });
     }
   }
 
   static async getUser(req: Request, res: Response) {
     try {
-      // extracting user id from request params
       const { userId } = req.params;
+      const user = await AdminUserService.getUserById(userId);
 
-      // fetching user by id
-      const user = await  AdminUserService.getUserById(userId);
+      // SAFE business error
+      if (!user) {
+        return res.status(200).json({
+          status: false,
+          message: ADMIN_USER_MESSAGES.USER_NOT_FOUND,
+        });
+      }
 
-      // checking if user exists
-      if (!user)
-        return res
-          .status(404)
-          .json({ status: false, message: "User not found" });
-
-      // returning user data
-      return res.status(200).json({ status: true, data: user, message:"User data fetched" });
+      return res.status(200).json({
+        status: true,
+        data: user,
+        message: ADMIN_USER_MESSAGES.USER_FETCHED,
+      });
     } catch (err: any) {
-      // internal error fetching specific user
-      return res.status(500).json({ status: false, message: err.message });
+      return res.status(500).json({
+        status: false,
+        message: ADMIN_USER_MESSAGES.INTERNAL_SERVER_ERROR,
+        error: err.message,
+      });
     }
   }
 
   static async createUser(req: Request, res: Response) {
     try {
-      // extracting new user data from request body
       const payload = req.body;
+      const user = await AdminUserService.createUser(payload);
 
-      // creating new user using service layer
-      const user = await  AdminUserService.createUser(payload);
-
-      // returning creation success response
-      return res
-        .status(201)
-        .json({ status: true, data: user, message: "User created" });
+      return res.status(201).json({
+        status: true,
+        data: user,
+        message: ADMIN_USER_MESSAGES.USER_CREATED,
+      });
     } catch (err: any) {
-      // validation error or bad payload
-      return res.status(400).json({ status: false, message: err.message });
+
+      // SAFE business errors
+      const safeErrors = [
+        ADMIN_USER_MESSAGES.EMAIL_ALREADY_IN_USE,
+        ADMIN_USER_MESSAGES.INVALID_ROLE_NAME,
+        ADMIN_USER_MESSAGES.PASSWORD_REQUIRED,
+      ];
+
+      if (safeErrors.includes(err.message)) {
+        return res.status(200).json({
+          status: false,
+          message: err.message,
+        });
+      }
+
+      // System errors
+      return res.status(500).json({
+        status: false,
+        message: ADMIN_USER_MESSAGES.INTERNAL_SERVER_ERROR,
+        error: err.message,
+      });
     }
   }
 
   static async updateUser(req: Request, res: Response) {
     try {
-      // extracting user id from request params
       const { userId } = req.params;
-
-      // new data to update user
       const payload = req.body;
 
-      // updating user in service layer
-      const user = await  AdminUserService.updateUser(userId, payload);
+      const user = await AdminUserService.updateUser(userId, payload);
 
-      // returning update success message
-      return res
-        .status(200)
-        .json({ status: true, data: user, message: "User updated" });
+      return res.status(200).json({
+        status: true,
+        data: user,
+        message: ADMIN_USER_MESSAGES.USER_UPDATED,
+      });
     } catch (err: any) {
-      // invalid update request
-      return res.status(400).json({ status: false, message: err.message });
+      return res.status(500).json({
+        status: false,
+        message: ADMIN_USER_MESSAGES.INTERNAL_SERVER_ERROR,
+        error: err.message,
+      });
     }
   }
 
   static async deleteUser(req: Request, res: Response) {
     try {
-      // extracting user id to delete
       const { userId } = req.params;
+      const user = await AdminUserService.deleteUser(userId);
 
-      // deleting user through service
-      const user = await  AdminUserService.deleteUser(userId);
-
-      // returning delete success message
-      return res
-        .status(200)
-        .json({ status: true, data: user, message: "User deleted" });
+      return res.status(200).json({
+        status: true,
+        data: user,
+        message: ADMIN_USER_MESSAGES.USER_DELETED,
+      });
     } catch (err: any) {
-      // error during delete operation
-      return res.status(400).json({ status: false, message: err.message });
+      return res.status(500).json({
+        status: false,
+        message: ADMIN_USER_MESSAGES.INTERNAL_SERVER_ERROR,
+        error: err.message,
+      });
     }
   }
 }

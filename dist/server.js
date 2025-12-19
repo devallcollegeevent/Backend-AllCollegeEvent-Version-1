@@ -42,5 +42,5 @@ app.get("/", (req, res) => {
 // starting the express server
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });

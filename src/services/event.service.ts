@@ -14,7 +14,7 @@ static async getEventsByOrg(identity: string): Promise<EventType[]> {
   const events = await prisma.event.findMany({
     where: {
       orgIdentity: identity,
-      status: "APPROVED",
+      status: EVENT_MESSAGES.APPROVED,
     },
     orderBy: {
       createdAt: "desc",
@@ -153,7 +153,7 @@ static async getEventsByOrg(identity: string): Promise<EventType[]> {
     // fetch ONLY approved events
     const rawEvents = await prisma.event.findMany({
       where: {
-        status: "APPROVED",
+        status: EVENT_MESSAGES.APPROVED,
       },
       orderBy: { createdAt: "desc" },
       include: {

@@ -43,7 +43,7 @@ export class OrgController {
 
       // Organization not found
       if (!data) {
-        return res.status(404).json({
+        return res.status(200).json({
           status: false,
           message: ORG_MESSAGES.ORG_NOT_FOUND,
         });

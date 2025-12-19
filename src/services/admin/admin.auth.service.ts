@@ -1,32 +1,44 @@
 const prisma = require("../../config/db.config");
 import { hashPassword, comparePassword } from "../../utils/hash";
 import { generateToken, verifyToken } from "../../utils/jwt";
+import { ADMIN_AUTH_MESSAGES } from "../../constants/admin.auth.message";
 
 export default class AdminAuthService {
   static async login(email: string, password: string) {
-    // fetching user along with role to verify admin permissions
+    // fetch user with role
     const user = await prisma.user.findUnique({
       where: { email },
       include: { role: true },
     });
 
-    // checking if user exists
-    if (!user) throw new Error("Admin account not found");
+    // validations
+    if (!user) {
+      throw new Error(ADMIN_AUTH_MESSAGES.ADMIN_NOT_FOUND);
+    }
 
-    // validating account status
-    if (user.isDeleted) throw new Error("Account deleted");
-    if (!user.isActive) throw new Error("Account inactive");
+    if (user.isDeleted) {
+      throw new Error(ADMIN_AUTH_MESSAGES.ACCOUNT_DELETED);
+    }
 
-    // verifying if user is actually an admin (via flag or role name)
+    if (!user.isActive) {
+      throw new Error(ADMIN_AUTH_MESSAGES.ACCOUNT_INACTIVE);
+    }
+
+    // admin check
     const isAdminFlag = (user as any).isAdmin === true;
     const roleIsAdmin = user.role?.name?.toLowerCase() === "admin";
-    if (!isAdminFlag && !roleIsAdmin) throw new Error("Not an admin");
 
-    // checking password correctness
+    if (!isAdminFlag && !roleIsAdmin) {
+      throw new Error(ADMIN_AUTH_MESSAGES.NOT_AN_ADMIN);
+    }
+
+    // password check
     const ok = await comparePassword(password, user.password);
-    if (!ok) throw new Error("Invalid credentials");
+    if (!ok) {
+      throw new Error(ADMIN_AUTH_MESSAGES.INVALID_CREDENTIALS);
+    }
 
-    // generating admin login token
+    // token generation
     const token = generateToken({
       identity: user.identity,
       email: user.email,
@@ -34,8 +46,9 @@ export default class AdminAuthService {
       type: "admin",
     });
 
-    // removing password from response
+    // remove password
     const { password: _p, ...rest } = user as any;
+
     return { user: rest, token };
   }
 }
