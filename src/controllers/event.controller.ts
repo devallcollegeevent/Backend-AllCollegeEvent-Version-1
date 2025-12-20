@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import { EventService } from "../services/event.service";
 import { EVENT_MESSAGES } from "../constants/event.message";
+import { uploadToS3 } from "../utils/s3Upload";
 
 /**
  * Event Controller
  * Handles event-related API requests
  */
 export class EventController {
-
   /**
    * Get all events of a specific organization (Public / Org view)
    */
@@ -33,9 +33,7 @@ export class EventController {
         data: events,
         message: EVENT_MESSAGES.EVENTS_FETCHED,
       });
-
     } catch (err: any) {
-
       // Known / business-level errors
       const safeErrors = [
         EVENT_MESSAGES.ORG_ID_REQUIRED,
@@ -95,19 +93,26 @@ export class EventController {
   /**
    * Create a new event under an organization
    */
+
   static async createEvent(req: Request, res: Response) {
     try {
       // Extract organization ID
       const { orgId } = req.params;
 
-      // Extract event details from request body
+      // Extract event details
       const { event_title, description, event_date, event_time, mode, venue } =
         req.body;
 
-      // Handle optional image upload
-      const image = req.file ? `/uploads/${req.file.filename}` : null;
+      let image: string | null = null;
 
-      // Create event
+      // Upload to S3 instead of local uploads
+      if (req.file) {
+        console.log(req.file)
+        const uploaded = await uploadToS3(req.file, "events");
+        image = uploaded.url; // S3 URL stored
+      }
+
+      // Create event (NO SERVICE CHANGE)
       const event = await EventService.createEventService({
         org_id: orgId,
         event_title,
@@ -115,21 +120,20 @@ export class EventController {
         event_date,
         event_time,
         mode,
-        image,
+        image, //  now S3 URL
         venue,
       });
 
-      // Success response
       res.status(200).json({
         status: true,
         data: event,
         message: EVENT_MESSAGES.EVENT_CREATED,
       });
     } catch (err) {
-      // Internal error
-      res
-        .status(400)
-        .json({ status: false, message: EVENT_MESSAGES.INTERNAL_ERROR });
+      res.status(400).json({
+        status: false,
+        message: EVENT_MESSAGES.INTERNAL_ERROR,
+      });
     }
   }
 

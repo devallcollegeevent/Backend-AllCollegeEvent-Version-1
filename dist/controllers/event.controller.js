@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.EventController = void 0;
 const event_service_1 = require("../services/event.service");
 const event_message_1 = require("../constants/event.message");
+const s3Upload_1 = require("../utils/s3Upload");
 /**
  * Event Controller
  * Handles event-related API requests
@@ -89,11 +90,16 @@ class EventController {
         try {
             // Extract organization ID
             const { orgId } = req.params;
-            // Extract event details from request body
+            // Extract event details
             const { event_title, description, event_date, event_time, mode, venue } = req.body;
-            // Handle optional image upload
-            const image = req.file ? `/uploads/${req.file.filename}` : null;
-            // Create event
+            let image = null;
+            // Upload to S3 instead of local uploads
+            if (req.file) {
+                console.log(req.file);
+                const uploaded = await (0, s3Upload_1.uploadToS3)(req.file, "events");
+                image = uploaded.url; // S3 URL stored
+            }
+            // Create event (NO SERVICE CHANGE)
             const event = await event_service_1.EventService.createEventService({
                 org_id: orgId,
                 event_title,
@@ -101,10 +107,9 @@ class EventController {
                 event_date,
                 event_time,
                 mode,
-                image,
+                image, //  now S3 URL
                 venue,
             });
-            // Success response
             res.status(200).json({
                 status: true,
                 data: event,
@@ -112,10 +117,10 @@ class EventController {
             });
         }
         catch (err) {
-            // Internal error
-            res
-                .status(400)
-                .json({ status: false, message: event_message_1.EVENT_MESSAGES.INTERNAL_ERROR });
+            res.status(400).json({
+                status: false,
+                message: event_message_1.EVENT_MESSAGES.INTERNAL_ERROR,
+            });
         }
     }
     /**

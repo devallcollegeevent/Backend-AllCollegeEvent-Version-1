@@ -35,8 +35,6 @@ router.get(
  */
 router.post(
   "/organizations/:orgId/events",
-  authMiddleware,
-  validate(eventValidation.create),
   upload.single("image"),
   EventController.createEvent
 );

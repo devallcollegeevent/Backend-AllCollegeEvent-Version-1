@@ -5,17 +5,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const multer_1 = __importDefault(require("multer"));
 const path_1 = __importDefault(require("path"));
-// Always use project root folder
-const uploadDir = path_1.default.join(process.cwd(), "uploads");
-const storage = multer_1.default.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadDir);
-    },
-    filename: (req, file, cb) => {
-        const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
-        cb(null, `${file.fieldname}-${unique}${path_1.default.extname(file.originalname)}`);
-    },
-});
+// MEMORY STORAGE (for S3 upload)
+const storage = multer_1.default.memoryStorage();
+// uploads folder NOT used anymore
+// const uploadDir = path.join(process.cwd(), "uploads");
+// file filter remains SAME
 const fileFilter = (req, file, cb) => {
     const allowed = /jpeg|jpg|png|gif|pdf|mp4|avi|mov|mkv|webm/;
     const extOk = allowed.test(path_1.default.extname(file.originalname).toLowerCase());
@@ -25,8 +19,12 @@ const fileFilter = (req, file, cb) => {
     else
         cb(new Error("Invalid file type"));
 };
+// multer instance
 const upload = (0, multer_1.default)({
     storage,
     fileFilter,
+    limits: {
+        fileSize: 10 * 1024 * 1024, // 10 MB (adjust if needed)
+    },
 });
 exports.default = upload;

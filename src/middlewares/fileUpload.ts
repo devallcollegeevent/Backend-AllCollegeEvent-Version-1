@@ -2,28 +2,13 @@ import multer, { FileFilterCallback } from "multer";
 import path from "path";
 import { Request, Express } from "express";
 
-// Always use project root folder
-const uploadDir = path.join(process.cwd(), "uploads");
+// MEMORY STORAGE (for S3 upload)
+const storage = multer.memoryStorage();
 
-const storage = multer.diskStorage({
-  destination: (
-    req: Request,
-    file: Express.Multer.File,
-    cb: (error: Error | null, destination: string) => void
-  ) => {
-    cb(null, uploadDir);
-  },
+// uploads folder NOT used anymore
+// const uploadDir = path.join(process.cwd(), "uploads");
 
-  filename: (
-    req: Request,
-    file: Express.Multer.File,
-    cb: (error: Error | null, filename: string) => void
-  ) => {
-    const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, `${file.fieldname}-${unique}${path.extname(file.originalname)}`);
-  },
-});
-
+// file filter remains SAME
 const fileFilter = (
   req: Request,
   file: Express.Multer.File,
@@ -39,9 +24,13 @@ const fileFilter = (
   else cb(new Error("Invalid file type"));
 };
 
+// multer instance
 const upload = multer({
   storage,
   fileFilter,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10 MB (adjust if needed)
+  },
 });
 
 export default upload;
