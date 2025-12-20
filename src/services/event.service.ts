@@ -2,7 +2,7 @@ const prisma = require("../config/db.config");
 import { EventType } from "../types/type";
 import { EVENT_STATUS_LIST } from "../constants/event.status.message";
 import { EVENT_MESSAGES } from "../constants/event.message";
-import { getSignedUrl } from "../utils/s3SignedUrl";
+import { getResolvedImageUrl } from "../utils/s3SignedUrl";
 
 export class EventService {
   static async getEventsByOrg(identity: string): Promise<EventType[]> {
@@ -44,7 +44,7 @@ export class EventService {
 
     return events.map((event: EventType) => ({
       ...event,
-      bannerImage: event.bannerImage ? getSignedUrl(event.bannerImage) : null,
+      bannerImage: getResolvedImageUrl(event.bannerImage),
     }));
   }
 
