@@ -8,7 +8,9 @@ export const uploadToS3 = async (
   try {
     console.log("Uploading to S3:", file.originalname);
 
-    const key = `${folder}/${uuid()}-${file.originalname}`;
+    const safeName = file.originalname.replace(/\s+/g, "-");
+
+    const key = `${folder}/${uuid()}-${safeName}`;
 
     const params = {
       Bucket: process.env.AWS_S3_BUCKET as string,
