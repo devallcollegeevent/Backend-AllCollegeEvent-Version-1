@@ -13,12 +13,25 @@ export class AuthController {
   static async signup(req: Request, res: Response) {
     try {
       // Extract signup details from request body
-      const { name, email, password, type, ...rest } = req.body;
+      const {
+        name,
+        email,
+        password,
+        type,
+        platform = "web", 
+        ...rest
+      } = req.body;
 
-      // Call signup service
-      const user = await AuthService.signup(name, email, password, type, rest);
+      // Call signup service (6 args)
+      const user = await AuthService.signup(
+        name,
+        email,
+        password,
+        type,
+        platform,
+        rest
+      );
 
-      // Success response
       return res.status(200).json({
         status: true,
         message:
@@ -28,14 +41,12 @@ export class AuthController {
         data: user,
       });
     } catch (err: any) {
-      // Known / business errors
       const safeErrors = [
         AUTH_MESSAGES.ROLE_NOT_FOUND,
         AUTH_MESSAGES.EMAIL_ALREADY_REGISTERED,
         AUTH_MESSAGES.INVALID_TYPE,
       ];
 
-      // Business errors → 200
       if (safeErrors.includes(err.message)) {
         return res.status(200).json({
           status: false,
@@ -43,7 +54,6 @@ export class AuthController {
         });
       }
 
-      // System errors → 500
       return res.status(500).json({
         status: false,
         message: AUTH_MESSAGES.INTERNAL_SERVER_ERROR,

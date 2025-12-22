@@ -57,3 +57,8 @@ export interface UserType {
 
   roleId?: number;
 }
+
+export interface AceCategory {
+  identity: string;
+  category_name: string;
+};

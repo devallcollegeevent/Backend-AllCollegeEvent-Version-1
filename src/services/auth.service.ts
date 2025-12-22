@@ -14,29 +14,42 @@ import { AUTH_MESSAGES } from "../constants/auth.message";
  * Send organization account verification email
  * Triggered after successful org signup
  */
-const sendVerificationMail = async (org: any) => {
-  // Frontend verification URL base
-  const URL = process.env.MAIL_SEND;
+type Platform = "web" | "mobile";
 
+const sendVerificationMail = async (
+  org: any,
+  platform: Platform = "web"
+) => {
   // Generate verification token
   const token = generateToken({ identity: org.identity });
 
-  // Construct verification URL
-  const verifyUrl = `${URL}auth/email-verify?token=${token}`;
+  // Normalize platform (safety)
+  const safePlatform: Platform = platform === "mobile" ? "mobile" : "web";
 
-  // Email HTML template
+  let verifyUrl: string;
+
+  if (safePlatform === "mobile") {
+    // Mobile deep link
+    verifyUrl = `myapp://email-verify?token=${token}`;
+  } else {
+    // Web URL
+    const WEB_URL = process.env.MAIL_SEND;
+    verifyUrl = `${WEB_URL}auth/email-verify?token=${token}`;
+  }
+
   const html = `
     <h2>Verify Your Organization Account</h2>
     <p>Hello <b>${org.organizationName}</b>,</p>
     <p>Your account was created successfully. Please click the link below to verify:</p>
-    <a href="${verifyUrl}" 
+    <a href="${verifyUrl}"
        style="padding:10px 15px; background:#4CAF50; color:white; border-radius:4px; text-decoration:none;">
       Verify Your Account
     </a>
+    <p>If the button doesn't work, copy and paste this link:</p>
+    <p>${verifyUrl}</p>
     <p>After verification, you can login using the login page.</p>
   `;
 
-  // Send verification email
   await sendEmail({
     to: org.domainEmail,
     subject: "Verify your account",
@@ -44,12 +57,12 @@ const sendVerificationMail = async (org: any) => {
   });
 };
 
+
 /**
  * Authentication service
  * Handles signup, login, verification, OTP, password reset & Google login
  */
 export class AuthService {
-
   /**
    * Signup user or organization
    */
@@ -58,6 +71,7 @@ export class AuthService {
     email: string,
     password: string,
     type: "user" | "org",
+    platform:"mobile"|"web",
     extra: any
   ) {
     // Fetch role based on type
@@ -110,7 +124,7 @@ export class AuthService {
       });
 
       // Send verification email
-      await sendVerificationMail(org);
+      await sendVerificationMail(org,platform);
 
       return org;
     }
