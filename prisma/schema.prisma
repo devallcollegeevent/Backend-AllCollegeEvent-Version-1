@@ -16,11 +16,13 @@ model Role {
 
   users User[]
   orgs  Org[]
+
+  @@map("ace_role")
 }
 
 model User {
-  identity String @id @default(uuid()) // PRIMARY KEY (UUID)
-  id       Int    @unique @default(autoincrement()) // SERIAL NUMBER
+  identity String @id @default(uuid())
+  id       Int    @unique @default(autoincrement())
 
   name     String
   email    String @unique
@@ -46,8 +48,10 @@ model User {
   updatedAt DateTime @updatedAt
 
   otps          OTP[]
-  events        Event[] // was Event Event[]
+  events        Event[]
   SocialAccount SocialAccount[]
+
+  @@map("ace_user")
 }
 
 model Org {
@@ -86,6 +90,8 @@ model Org {
 
   otps   OTP[]
   events Event[]
+
+  @@map("ace_org")
 }
 
 model OTP {
@@ -105,10 +111,12 @@ model OTP {
   updatedAt DateTime? @updatedAt
 
   userIdentity String?
-  user         User?   @relation(fields: [userIdentity], references: [identity], onDelete: Cascade)
+  user         User? @relation(fields: [userIdentity], references: [identity], onDelete: Cascade)
 
   orgIdentity String?
-  org         Org?    @relation(fields: [orgIdentity], references: [identity], onDelete: Cascade)
+  org         Org?  @relation(fields: [orgIdentity], references: [identity], onDelete: Cascade)
+
+  @@map("ace_otp")
 }
 
 enum EventStatus {
@@ -142,9 +150,11 @@ model Event {
 
   status EventStatus @default(PENDING)
 
-  org          Org     @relation(fields: [orgIdentity], references: [identity])
-  User         User?   @relation(fields: [userIdentity], references: [identity])
+  org          Org   @relation(fields: [orgIdentity], references: [identity])
+  User         User? @relation(fields: [userIdentity], references: [identity])
   userIdentity String?
+
+  @@map("ace_event")
 }
 
 model AuthProvider {
@@ -157,13 +167,15 @@ model AuthProvider {
   updatedAt    DateTime @updatedAt
 
   socialAccounts SocialAccount[]
+
+  @@map("ace_auth_provider")
 }
 
 model SocialAccount {
   identity       String  @id @default(uuid())
   id             Int     @unique @default(autoincrement())
   userId         String
-  providerId     String // MUST be String to match AuthProvider.identity
+  providerId     String
   providerUserId String
   providerEmail  String?
 
@@ -172,4 +184,43 @@ model SocialAccount {
 
   user     User         @relation(fields: [userId], references: [identity])
   provider AuthProvider @relation(fields: [providerId], references: [identity])
+
+  @@map("ace_social_account")
 }
+
+model AcePerk {
+  identity  String   @id @default(uuid()) @map("identity")
+  id        Int      @unique @default(autoincrement())
+
+  perkName  String   @map("perk_name")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt      @map("updated_at")
+
+  @@map("ace_perks")
+}
+
+model AceCertification {
+  identity  String   @id @default(uuid()) @map("identity")
+  id        Int      @unique @default(autoincrement())
+
+  certName  String   @map("cert_name")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt      @map("updated_at")
+
+  @@map("ace_certification")
+}
+
+model AceCategoryType {
+  identity     String   @id @default(uuid()) @map("identity")
+  id           Int      @unique @default(autoincrement())
+
+  categoryName String   @map("category_name")
+
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt      @map("updated_at")
+
+  @@map("ace_type_of_category")
+}
+

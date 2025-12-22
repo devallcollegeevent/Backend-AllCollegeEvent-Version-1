@@ -1,6 +1,9 @@
 const pkg = require("@prisma/client");
 const { PrismaClient } = pkg;
 const { seedRoles } = require("./seeds/role.seed.ts");
+const { seedAceCertifications } = require("./seeds/certification.seed.ts");
+const {seedAcePerks} = require("./seeds/perk.seed.ts")
+const {seedAceCategoryTypes} = require("./seeds/categoryType.seed.ts")
 
 // Initialize Prisma client
 const prisma = new PrismaClient();
@@ -15,6 +18,9 @@ async function main() {
 
   // Seed default roles
   await seedRoles();
+  await seedAceCertifications();
+  await seedAcePerks();
+  await seedAceCategoryTypes();
 
   // Log completion
   console.log("Seed completed!");

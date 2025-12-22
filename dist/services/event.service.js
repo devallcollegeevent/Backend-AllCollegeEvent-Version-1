@@ -4,6 +4,7 @@ exports.EventService = void 0;
 const prisma = require("../config/db.config");
 const event_status_message_1 = require("../constants/event.status.message");
 const event_message_1 = require("../constants/event.message");
+const s3SignedUrl_1 = require("../utils/s3SignedUrl");
 class EventService {
     static async getEventsByOrg(identity) {
         if (!identity) {
@@ -40,9 +41,7 @@ class EventService {
         }
         return events.map((event) => ({
             ...event,
-            bannerImage: event.bannerImage
-                ? `${BASE_URL}${event.bannerImage}`
-                : null,
+            bannerImage: (0, s3SignedUrl_1.getResolvedImageUrl)(event.bannerImage),
         }));
     }
     static async createEventService(data) {
