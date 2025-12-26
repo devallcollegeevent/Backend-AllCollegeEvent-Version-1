@@ -116,6 +116,9 @@ export class EventController {
         bannerImages,
       };
 
+      console.log(payload);
+      
+
       const event = await EventService.createEvent(payload);
 
       res.status(200).json({

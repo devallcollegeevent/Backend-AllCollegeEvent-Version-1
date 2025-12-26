@@ -99,27 +99,9 @@ class EventController {
             }
             console.log(req.body);
             const payload = {
-                orgIdentity: req.params.orgId,
-                // FIX 1: convert to number
-                createdBy: req.body.createdBy ? Number(req.body.createdBy) : null,
-                title: req.body.title,
-                description: req.body.description,
-                mode: req.body.mode,
-                categoryIdentity: req.body.categoryIdentity,
-                eventTypeIdentity: req.body.eventTypeIdentity,
-                // FIX 2: parse arrays correctly
-                eligibleDeptIdentities: JSON.parse(req.body.eligibleDeptIdentities || "[]"),
-                tags: JSON.parse(req.body.tags || "[]"),
-                collaborators: JSON.parse(req.body.collaborators || "[]"),
-                calendars: JSON.parse(req.body.calendars || "[]"),
-                tickets: JSON.parse(req.body.tickets || "[]"),
-                perkIdentities: JSON.parse(req.body.perkIdentities || "[]"),
-                certIdentities: JSON.parse(req.body.certIdentities || "[]"),
-                accommodationIdentities: JSON.parse(req.body.accommodationIdentities || "[]"),
-                bannerImages, // from multer + S3
-                eventLink: req.body.eventLink,
-                paymentLink: req.body.paymentLink,
-                socialLinks: JSON.parse(req.body.socialLinks || "{}"),
+                ...req.body,
+                orgIdentity: orgId,
+                bannerImages,
             };
             console.log(payload);
             const event = await event_service_1.EventService.createEvent(payload);

@@ -50,7 +50,7 @@ class EventService {
             // 1. Create Event
             const event = await tx.event.create({
                 data: {
-                    orgIdentity: payload.orgId,
+                    orgIdentity: payload.orgIdentity,
                     createdBy: payload.createdBy,
                     title: payload.title,
                     description: payload.description,

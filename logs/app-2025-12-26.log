@@ -105,3 +105,82 @@ Argument `org` is missing.
 [2025-12-26 17:45:43] [INFO] → Incoming → GET /api/v1/master/categories
 [2025-12-26 17:45:45] [INFO] → Incoming → GET /api/v1/master/categories
 [2025-12-26 17:45:47] [INFO] → Incoming → GET /api/v1/master/categories
+[2025-12-26 17:54:48] [INFO] → Incoming → POST /api/v1/organizations/fb553772-fbff-42ce-a557-96b5146f01d3/events
+[2025-12-26 17:54:49] [ERROR] → Error → POST /api/v1/organizations/fb553772-fbff-42ce-a557-96b5146f01d3/events | Message: 
+Invalid `tx.event.create()` invocation in
+D:\Siva\Backend-AllCollegeEvent-Version-1\dist\services\event.service.js:51:42
+
+  48 static async createEvent(payload) {
+  49     return prisma.$transaction(async (tx) => {
+  50         // 1. Create Event
+→ 51         const event = await tx.event.create({
+               data: {
+                 orgIdentity: undefined,
+                 createdBy: 1,
+                 title: "AI Tech Conference 2025",
+                 description: "Annual AI and technology conference",
+                 mode: "OFFLINE",
+                 categoryIdentity: "cat_tech",
+                 eventTypeIdentity: "conference",
+                 eligibleDeptIdentities: [
+                   "dept_cse",
+                   "dept_it"
+                 ],
+                 tags: [
+                   "ai",
+                   "tech",
+                   "conference"
+                 ],
+                 bannerImages: [],
+                 eventLink: undefined,
+                 socialLinks: undefined,
+                 paymentLink: undefined,
+             +   org: {
+             +     create: OrgCreateWithoutEventsInput | OrgUncheckedCreateWithoutEventsInput,
+             +     connectOrCreate: OrgCreateOrConnectWithoutEventsInput,
+             +     connect: OrgWhereUniqueInput
+             +   }
+               }
+             })
+
+Argument `org` is missing.
+[2025-12-26 17:58:44] [INFO] → Incoming → POST /api/v1/organizations/fb553772-fbff-42ce-a557-96b5146f01d3/events
+[2025-12-26 17:58:45] [ERROR] → Error → POST /api/v1/organizations/fb553772-fbff-42ce-a557-96b5146f01d3/events | Message: 
+Invalid `tx.event.create()` invocation in
+D:\Siva\Backend-AllCollegeEvent-Version-1\dist\services\event.service.js:51:42
+
+  48 static async createEvent(payload) {
+  49     return prisma.$transaction(async (tx) => {
+  50         // 1. Create Event
+→ 51         const event = await tx.event.create({
+               data: {
+                 orgIdentity: undefined,
+                 createdBy: 1,
+                 title: "AI Tech Conference 2025",
+                 description: "Annual AI and technology conference",
+                 mode: "OFFLINE",
+                 categoryIdentity: "cat_tech",
+                 eventTypeIdentity: "conference",
+                 eligibleDeptIdentities: [
+                   "dept_cse",
+                   "dept_it"
+                 ],
+                 tags: [
+                   "ai",
+                   "tech",
+                   "conference"
+                 ],
+                 bannerImages: [],
+                 eventLink: undefined,
+                 socialLinks: undefined,
+                 paymentLink: undefined,
+             +   org: {
+             +     create: OrgCreateWithoutEventsInput | OrgUncheckedCreateWithoutEventsInput,
+             +     connectOrCreate: OrgCreateOrConnectWithoutEventsInput,
+             +     connect: OrgWhereUniqueInput
+             +   }
+               }
+             })
+
+Argument `org` is missing.
+[2025-12-26 18:01:49] [INFO] → Incoming → POST /api/v1/organizations/fb553772-fbff-42ce-a557-96b5146f01d3/events
