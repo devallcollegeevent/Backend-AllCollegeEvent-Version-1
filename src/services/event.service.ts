@@ -55,22 +55,26 @@ export class EventService {
       // 1. Create Event
       const event = await tx.event.create({
         data: {
-          orgIdentity: payload.orgIdentity,
-          createdBy: payload.createdBy,
-
           title: payload.title,
           description: payload.description,
           mode: payload.mode,
           categoryIdentity: payload.categoryIdentity,
           eventTypeIdentity: payload.eventTypeIdentity,
 
-          eligibleDeptIdentities: payload.eligibleDeptIdentities ?? [],
-          tags: payload.tags ?? [],
+          eligibleDeptIdentities: payload.eligibleDeptIdentities,
+          tags: payload.tags,
+          bannerImages: payload.bannerImages,
 
-          bannerImages: payload.bannerImages ?? [],
           eventLink: payload.eventLink,
-          socialLinks: payload.socialLinks,
           paymentLink: payload.paymentLink,
+          socialLinks: payload.socialLinks,
+
+          createdBy: payload.createdBy,
+
+          // REQUIRED RELATION
+          org: {
+            connect: { identity: payload.orgIdentity },
+          },
         },
       });
 

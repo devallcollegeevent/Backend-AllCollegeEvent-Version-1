@@ -97,9 +97,16 @@ export class EventController {
 
   static async createEvent(req: Request, res: Response) {
     try {
-      const { orgId } = req.params;
+      const orgIdentity = req.params.orgId;
 
-      // Upload image (optional)
+      if (!orgIdentity) {
+        return res.status(400).json({
+          success: false,
+          message: "orgId is required",
+        });
+      }
+
+      // ===== FILE HANDLING =====
       let bannerImages: string[] = [];
       if (req.files && Array.isArray(req.files)) {
         for (const file of req.files) {
@@ -108,28 +115,59 @@ export class EventController {
         }
       }
 
-      console.log(req.body);
-
-      const payload = {
-        ...req.body,
-        orgIdentity: orgId,
-        bannerImages,
+      // ===== SAFE PARSER =====
+      const parseJSON = <T>(value: any, fallback: T): T => {
+        try {
+          if (!value) return fallback;
+          if (Array.isArray(value)) value = value[value.length - 1];
+          return JSON.parse(value);
+        } catch {
+          return fallback;
+        }
       };
 
-      console.log(payload);
-      
+      // ===== NORMALIZED PAYLOAD =====
+      const payload = {
+        orgIdentity,
+
+        // FIX 1: convert string → number
+        createdBy: req.body.createdBy ? Number(req.body.createdBy) : null,
+
+        title: req.body.title,
+        description: req.body.description,
+        mode: req.body.mode,
+        categoryIdentity: req.body.categoryIdentity,
+        eventTypeIdentity: req.body.eventTypeIdentity,
+
+        // FIX 2: parse arrays
+        eligibleDeptIdentities: parseJSON(req.body.eligibleDeptIdentities, []),
+        tags: parseJSON(req.body.tags, []),
+
+        collaborators: parseJSON(req.body.collaborators, []),
+        calendars: parseJSON(req.body.calendars, []),
+        tickets: parseJSON(req.body.tickets, []),
+
+        perkIdentities: parseJSON(req.body.perkIdentities, []),
+        certIdentities: parseJSON(req.body.certIdentities, []),
+        accommodationIdentities: parseJSON(
+          req.body.accommodationIdentities,
+          []
+        ),
+
+        bannerImages,
+        eventLink: req.body.eventLink,
+        paymentLink: req.body.paymentLink,
+        socialLinks: parseJSON(req.body.socialLinks, {}),
+      };
 
       const event = await EventService.createEvent(payload);
 
-      res.status(200).json({
-        success: true,
-        data: event,
-        message: "Event created successfully",
-      });
-    } catch (error: any) {
-      res.status(500).json({
+      res.status(201).json({ success: true, data: event });
+    } catch (err: any) {
+      console.error(err);
+      res.status(400).json({
         success: false,
-        message: error.message || "Failed to create event",
+        message: err.message,
       });
     }
   }
