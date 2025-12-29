@@ -36,7 +36,7 @@ model User {
   profileImage String?
 
   isDeleted   Boolean   @default(false)
-  isActive    Boolean?  @default(true)
+  isActive    Boolean?  @default(false)
   lastLoginAt DateTime?
 
   roleId Int?

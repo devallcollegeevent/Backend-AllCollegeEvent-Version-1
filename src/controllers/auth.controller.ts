@@ -125,7 +125,7 @@ export class AuthController {
       }
 
       // Verify organization
-      const result = await AuthService.verifyOrg(token as string);
+      const result = await AuthService.verifyAccount(token as string);
 
       // Success response
       return res.status(200).json({

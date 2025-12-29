@@ -5,6 +5,16 @@ export const AUTH_MESSAGES = {
   INVALID_TYPE: "Invalid type",
   USER_CREATED_SUCCESS: "user created successfully",
   ORG_CREATED_SUCCESS: "org created successfully",
+  PUBLIC_EMAIL_MSG:
+    "Public email domains are not allowed for organization signup",
+  ORG_MAIL_MATCH: "Organization name must match the email domain",
+  EMAIL_ALREADY_USER: "This email is already registered as a user",
+  EMAIL_ALREADY_ORG: "This email is already registered as an organization",
+
+  ORG_ALREADY_VERIFIED: "Organization already verified",
+  USER_ALREADY_VERIFIED: "User already verified",
+  USER_VERIFIED_SUCCESS: "User verified successfully",
+  ACCOUNT_NOT_FOUND_BY_TOKEN: "Account not found for this verification token",
 
   // Login
   ACCOUNT_NOT_FOUND: "Account not found",
@@ -12,7 +22,8 @@ export const AUTH_MESSAGES = {
   ACCOUNT_INACTIVE: "Your account is inactive. Contact admin.",
   ORG_NOT_FOUND: "Organization account not found",
   ORG_DELETED: "Organization account deleted. Contact support.",
-  ORG_NOT_VERIFIED: "Your organization is not verified yet. Please contact admin.",
+  ORG_NOT_VERIFIED:
+    "Your organization is not verified yet. Please contact admin.",
   INVALID_PASSWORD: "Invalid password",
   LOGIN_SUCCESS: "login successfully",
 
@@ -35,7 +46,7 @@ export const AUTH_MESSAGES = {
 
   // Reset Password
   PASSWORD_RESET_SUCCESS: "Password reset successful",
-  PASSWORD_REQUIRED:"Password Required",
+  PASSWORD_REQUIRED: "Password Required",
 
   // Google Login
   GOOGLE_TOKEN_MISSING: "Google token missing",
@@ -45,3 +56,15 @@ export const AUTH_MESSAGES = {
   // General
   INTERNAL_SERVER_ERROR: "Internal server error",
 };
+
+export const PUBLIC_EMAIL_DOMAINS = [
+  "gmail.com",
+  "yahoo.com",
+  "outlook.com",
+  "hotmail.com",
+  "live.com",
+  "icloud.com",
+];
+
+export const ORG = "org";
+export const USER = "user";

@@ -15,3 +15,4 @@ export const ORG_MESSAGES = {
   // Errors
   INTERNAL_ERROR: "Internal server error",
 };
+

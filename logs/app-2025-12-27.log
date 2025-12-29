@@ -76,3 +76,23 @@ D:\Siva\Backend-AllCollegeEvent-Version-1\dist\services\event.service.js:186:45
 → 186     await tx.eventAccommodation.createMany(
 Foreign key constraint violated: `ace_event_accommodation_accommodationIdentity_fkey (index)`
 [2025-12-27 11:34:08] [INFO] → Incoming → POST /api/v1/organizations/a0004184-fa68-45af-af83-78553f8fe4e9/events
+[2025-12-27 13:07:56] [INFO] → Incoming → POST /api/v1/auth/google-login
+[2025-12-27 18:41:42] [INFO] → Incoming → POST /api/v1/auth/signup
+[2025-12-27 18:42:00] [INFO] → Incoming → POST /api/v1/auth/signup
+[2025-12-27 18:50:28] [INFO] → Incoming → POST /api/v1/auth/signup
+[2025-12-27 18:51:04] [INFO] → Incoming → POST /api/v1/auth/signup
+[2025-12-27 18:52:10] [INFO] → Incoming → POST /api/v1/auth/signup
+[2025-12-27 18:52:30] [INFO] → Incoming → POST /api/v1/auth/signup
+[2025-12-27 19:05:14] [INFO] → Incoming → POST /api/v1/auth/signup
+[2025-12-27 19:05:31] [INFO] → Incoming → POST /api/v1/auth/signup
+[2025-12-27 19:14:12] [INFO] → Incoming → POST /api/v1/auth/signup
+[2025-12-27 19:14:23] [INFO] → Incoming → POST /api/v1/auth/signup
+[2025-12-27 19:14:41] [INFO] → Incoming → POST /api/v1/auth/signup
+[2025-12-27 19:16:35] [INFO] → Incoming → POST /api/v1/auth/login
+[2025-12-27 19:21:30] [INFO] → Incoming → GET /api/v1/master/certifications
+[2025-12-27 19:21:37] [INFO] → Incoming → POST /api/v1/auth/signup
+[2025-12-27 19:25:12] [INFO] → Incoming → POST /api/v1/auth/signup
+[2025-12-27 19:25:48] [INFO] → Incoming → POST /api/v1/auth/signup
+[2025-12-27 19:29:22] [INFO] → Incoming → POST /api/v1/auth/signup
+[2025-12-27 19:30:04] [INFO] → Incoming → POST /api/v1/auth/signup
+[2025-12-27 19:30:21] [INFO] → Incoming → POST /api/v1/auth/signup

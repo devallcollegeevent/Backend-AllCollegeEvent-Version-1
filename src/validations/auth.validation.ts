@@ -19,11 +19,20 @@ export const authValidation = {
 
       // Common fields
       email: Joi.string().email().required(),
-      password: Joi.string().min(6).required(),
+      password: Joi.string()
+        .pattern(
+          /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[@#_$])[A-Za-z0-9@#_$]{8,}$/
+        )
+        .required()
+        .messages({
+          "string.pattern.base":
+            "Password must be at least 8 characters long and include 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character (@ # _ $ only).",
+          "string.empty": "Password is required",
+        }),
 
       // User or Organization
       type: Joi.string().valid("user", "org").required(),
-      platform:Joi.string().valid("mobile","web").required(),
+      platform: Joi.string().valid("mobile", "web").required(),
 
       // Organization-only fields
       org_name: Joi.string().when("type", { is: "org", then: Joi.required() }),

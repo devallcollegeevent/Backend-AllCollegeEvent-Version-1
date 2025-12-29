@@ -9,53 +9,55 @@ import { sendOtpEmail } from "../utils/sendOtp";
 
 // Auth-related constant messages
 import { AUTH_MESSAGES } from "../constants/auth.message";
+import {
+  getCompanyFromEmail,
+  normalizeOrgName,
+  isPublicEmail,
+} from "../utils/helperFunction";
+import { Platform } from "../types/type";
 
 /**
  * Send organization account verification email
  * Triggered after successful org signup
  */
-type Platform = "web" | "mobile";
 
 const sendVerificationMail = async (
-  org: any,
+  recipient: {
+    email: string;
+    identity?: string;
+    id?: number;
+    organizationName?: string;
+  },
   platform: Platform = "web"
 ) => {
-  // Generate verification token
-  const token = generateToken({ identity: org.identity, id:org.id });
-
-  // Normalize platform (safety)
-  const safePlatform: Platform = platform === "mobile" ? "mobile" : "web";
-
-  let verifyUrl: string;
-
-  if (safePlatform === "mobile") {
-    // Mobile deep link
-    verifyUrl = `myapp://email-verify?token=${token}`;
-  } else {
-    // Web URL
-    const WEB_URL = process.env.MAIL_SEND;
-    verifyUrl = `${WEB_URL}auth/email-verify?token=${token}`;
+  if (!recipient.email) {
+    throw new Error("Recipient email is missing");
   }
 
+  const token =
+    recipient.identity && recipient.id
+      ? generateToken({ identity: recipient.identity, id: recipient.id })
+      : null;
+
+  const safePlatform: Platform = platform === "mobile" ? "mobile" : "web";
+
+  const verifyUrl =
+    safePlatform === "mobile"
+      ? `myapp://email-verify?token=${token}`
+      : `${process.env.MAIL_SEND}auth/email-verify?token=${token}`;
+
   const html = `
-    <h2>Verify Your Organization Account</h2>
-    <p>Hello <b>${org.organizationName}</b>,</p>
-    <p>Your account was created successfully. Please click the link below to verify:</p>
-    <a href="${verifyUrl}"
-       style="padding:10px 15px; background:#4CAF50; color:white; border-radius:4px; text-decoration:none;">
-      Verify Your Account
-    </a>
-    <p>If the button doesn't work, copy and paste this link:</p>
-    <p>After verification, you can login using the login page.</p>
+    <h2>Verify Account</h2>
+    <p>Hello <b>${recipient.organizationName ?? "User"}</b>,</p>
+    <a href="${verifyUrl}">Verify Account</a>
   `;
 
   await sendEmail({
-    to: org.domainEmail,
+    to: recipient.email,
     subject: "Verify your account",
     html,
   });
 };
-
 
 /**
  * Authentication service
@@ -70,48 +72,84 @@ export class AuthService {
     email: string,
     password: string,
     type: "user" | "org",
-    platform:"mobile"|"web",
+    platform: "mobile" | "web",
     extra: any
   ) {
-    // Fetch role based on type
+    // Role check
     const role = await prisma.role.findFirst({
       where: { name: type },
     });
 
-    if (!role) throw new Error(AUTH_MESSAGES.ROLE_NOT_FOUND);
+    if (!role) {
+      throw new Error(AUTH_MESSAGES.ROLE_NOT_FOUND);
+    }
 
-    // Check if email already exists
-    const existsUser = await prisma.user.findUnique({ where: { email } });
+    // Email uniqueness check
+    const existsUser = await prisma.user.findUnique({
+      where: { email },
+    });
+
     const existsOrg = await prisma.org.findUnique({
       where: { domainEmail: email },
     });
 
-    if (existsUser || existsOrg)
+    // Differentiated errors for frontend
+    if (existsUser && existsOrg) {
       throw new Error(AUTH_MESSAGES.EMAIL_ALREADY_REGISTERED);
+    }
+
+    if (existsUser) {
+      throw new Error(AUTH_MESSAGES.EMAIL_ALREADY_USER);
+    }
+
+    if (existsOrg) {
+      throw new Error(AUTH_MESSAGES.EMAIL_ALREADY_ORG);
+    }
 
     // Hash password
-    const hashed = await hashPassword(password);
+    const hashedPassword = await hashPassword(password);
 
-    // User signup
+    /* ================= USER SIGNUP ================= */
     if (type === "user") {
       const user = await prisma.user.create({
         data: {
           name,
           email,
-          password: hashed,
+          password: hashedPassword,
           roleId: role.id,
         },
       });
+      console.log(user);
+
+      await sendVerificationMail(
+        {
+          email: user.email,
+          identity: user.identity,
+          id: user.id,
+        },
+        platform
+      );
 
       return user;
     }
 
-    // Organization signup
+    /* ================= ORG SIGNUP ================= */
     if (type === "org") {
+      if (isPublicEmail(email)) {
+        throw new Error(AUTH_MESSAGES.PUBLIC_EMAIL_MSG);
+      }
+
+      const emailCompany = normalizeOrgName(getCompanyFromEmail(email));
+      const orgName = normalizeOrgName(extra.org_name);
+
+      // if (emailCompany !== orgName) {
+      //   throw new Error("Organization name must match the email domain");
+      // }
+
       const org = await prisma.org.create({
         data: {
           domainEmail: email,
-          password: hashed,
+          password: hashedPassword,
           roleId: role.id,
           organizationName: extra.org_name,
           organizationCategory: extra.org_cat,
@@ -122,8 +160,19 @@ export class AuthService {
         },
       });
 
-      // Send verification email
-      await sendVerificationMail(org,platform);
+      await sendVerificationMail(
+        {
+          email: org.domainEmail,
+          identity: org.identity,
+          id: org.id,
+          organizationName: org.organizationName,
+        },
+        platform
+      );
+
+      if (extra.contactEmail) {
+        await sendVerificationMail({ email: extra.contactEmail }, platform);
+      }
 
       return org;
     }
@@ -177,7 +226,7 @@ export class AuthService {
 
     // Generate JWT
     const token = generateToken({
-      id:user.id,
+      id: user.id,
       identity: user.identity,
       email,
       roleId: roleUUID,
@@ -190,8 +239,10 @@ export class AuthService {
   /**
    * Verify organization account using token
    */
-  static async verifyOrg(token: string) {
-    if (!token) throw new Error(AUTH_MESSAGES.TOKEN_MISSING);
+  static async verifyAccount(token: string) {
+    if (!token) {
+      throw new Error(AUTH_MESSAGES.TOKEN_MISSING);
+    }
 
     let decoded: any;
 
@@ -201,24 +252,62 @@ export class AuthService {
       throw new Error(AUTH_MESSAGES.INVALID_OR_EXPIRED_TOKEN);
     }
 
-    const orgIdnty = decoded.data.identity;
+    const identity = decoded.data.identity;
 
+    if (!identity) {
+      throw new Error(AUTH_MESSAGES.INVALID_OR_EXPIRED_TOKEN);
+    }
+
+    /* ================= CHECK ORG ================= */
     const org = await prisma.org.findUnique({
-      where: { identity: orgIdnty },
+      where: { identity },
     });
 
-    if (!org) throw new Error(AUTH_MESSAGES.ORG_NOT_FOUND_BY_TOKEN);
+    if (org) {
+      if (org.isVerified) {
+        return {
+          success: true,
+          message: AUTH_MESSAGES.ORG_ALREADY_VERIFIED,
+        };
+      }
 
-    // Mark org as verified
-    await prisma.org.update({
-      where: { identity: orgIdnty },
-      data: { isVerified: true },
+      await prisma.org.update({
+        where: { identity },
+        data: { isVerified: true },
+      });
+
+      return {
+        success: true,
+        message: AUTH_MESSAGES.ORG_VERIFIED_SUCCESS,
+      };
+    }
+
+    /* ================= CHECK USER ================= */
+    const user = await prisma.user.findUnique({
+      where: { identity },
     });
 
-    return {
-      success: true,
-      message: AUTH_MESSAGES.ORG_VERIFIED_SUCCESS,
-    };
+    if (user) {
+      if (user.isActive) {
+        return {
+          success: true,
+          message: AUTH_MESSAGES.USER_ALREADY_VERIFIED,
+        };
+      }
+
+      await prisma.user.update({
+        where: { identity },
+        data: { isActive: true },
+      });
+
+      return {
+        success: true,
+        message: AUTH_MESSAGES.USER_VERIFIED_SUCCESS,
+      };
+    }
+
+    /* ================= NOT FOUND ================= */
+    throw new Error(AUTH_MESSAGES.ACCOUNT_NOT_FOUND_BY_TOKEN);
   }
 
   /**
@@ -398,7 +487,7 @@ export class AuthService {
     }
 
     const token = generateToken({
-      id:user.id,
+      id: user.id,
       identity: user.identity,
       email,
       roleId: roleUUID,

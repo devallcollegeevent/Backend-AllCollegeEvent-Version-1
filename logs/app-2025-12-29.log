@@ -1,0 +1,35 @@
+[2025-12-29 11:17:42] [INFO] → Incoming → POST /api/v1/auth/signup
+[2025-12-29 11:17:58] [INFO] → Incoming → POST /api/v1/auth/signup
+[2025-12-29 11:30:05] [INFO] → Incoming → POST /api/v1/auth/signup
+[2025-12-29 11:31:41] [INFO] → Incoming → POST /api/v1/auth/login
+[2025-12-29 11:31:56] [INFO] → Incoming → POST /api/v1/auth/login
+[2025-12-29 11:42:05] [INFO] → Incoming → POST /api/v1/auth/signup
+[2025-12-29 11:42:43] [INFO] → Incoming → POST /api/v1/auth/signup
+[2025-12-29 11:43:26] [INFO] → Incoming → POST /api/v1/auth/login
+[2025-12-29 11:43:46] [INFO] → Incoming → POST /api/v1/auth/login
+[2025-12-29 11:57:57] [INFO] → Incoming → POST /api/v1/organizations/fa0e5396-c931-4c41-b456-5a3ef5828bc7/events
+[2025-12-29 11:57:57] [ERROR] → Error → POST /api/v1/organizations/fa0e5396-c931-4c41-b456-5a3ef5828bc7/events | Message: 
+Invalid `tx.eventPerk.createMany()` invocation in
+D:\Siva\Backend-AllCollegeEvent-Version-1\dist\services\event.service.js:166:36
+
+  163 }
+  164 // 5. Perks
+  165 if (payload.perkIdentities?.length) {
+→ 166     await tx.eventPerk.createMany(
+Foreign key constraint violated: `ace_event_perk_perkIdentity_fkey (index)`
+[2025-12-29 12:00:40] [INFO] → Incoming → POST /api/v1/organizations/fa0e5396-c931-4c41-b456-5a3ef5828bc7/events
+[2025-12-29 12:01:47] [INFO] → Incoming → GET //api/v1/organizations/fa0e5396-c931-4c41-b456-5a3ef5828bc7/events
+[2025-12-29 12:01:58] [INFO] → Incoming → GET /api/v1/organizations/fa0e5396-c931-4c41-b456-5a3ef5828bc7/events
+[2025-12-29 12:01:58] [ERROR] → Error → GET /api/v1/organizations/fa0e5396-c931-4c41-b456-5a3ef5828bc7/events | Message: Authorization header missing
+[2025-12-29 12:02:23] [INFO] → Incoming → GET /api/v1/organizations/fa0e5396-c931-4c41-b456-5a3ef5828bc7/events
+[2025-12-29 12:02:38] [INFO] → Incoming → GET /api/v1/organizations/
+[2025-12-29 12:02:38] [ERROR] → Error → GET /api/v1/organizations/ | Message: Invalid or expired token
+[2025-12-29 12:02:46] [INFO] → Incoming → GET /api/v1/organizations/
+[2025-12-29 12:03:59] [INFO] → Incoming → GET /api/v1/organization/fa0e5396-c931-4c41-b456-5a3ef5828bc7/events
+[2025-12-29 12:13:52] [INFO] → Incoming → POST /api/v1/auth/signup
+[2025-12-29 12:14:37] [INFO] → Incoming → POST /api/v1/auth/signup
+[2025-12-29 12:27:36] [INFO] → Incoming → POST /api/v1/auth/signup
+[2025-12-29 12:31:43] [INFO] → Incoming → POST /api/v1/auth/login
+[2025-12-29 12:36:40] [INFO] → Incoming → POST /api/v1/auth/signup
+[2025-12-29 12:36:46] [INFO] → Incoming → POST /api/v1/auth/signup
+[2025-12-29 12:39:20] [INFO] → Incoming → POST /api/v1/auth/signup

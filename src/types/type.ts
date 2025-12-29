@@ -71,3 +71,5 @@ export interface AuthRequest extends Request {
     identity: string;
   };
 }
+
+export type Platform = "web" | "mobile";

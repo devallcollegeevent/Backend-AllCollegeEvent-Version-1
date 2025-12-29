@@ -10,34 +10,29 @@ const google_auth_library_1 = require("google-auth-library");
 const sendOtp_1 = require("../utils/sendOtp");
 // Auth-related constant messages
 const auth_message_1 = require("../constants/auth.message");
-const sendVerificationMail = async (org, platform = "web") => {
-    // Generate verification token
-    const token = (0, jwt_1.generateToken)({ identity: org.identity, id: org.id });
-    // Normalize platform (safety)
+const helperFunction_1 = require("../utils/helperFunction");
+/**
+ * Send organization account verification email
+ * Triggered after successful org signup
+ */
+const sendVerificationMail = async (recipient, platform = "web") => {
+    if (!recipient.email) {
+        throw new Error("Recipient email is missing");
+    }
+    const token = recipient.identity && recipient.id
+        ? (0, jwt_1.generateToken)({ identity: recipient.identity, id: recipient.id })
+        : null;
     const safePlatform = platform === "mobile" ? "mobile" : "web";
-    let verifyUrl;
-    if (safePlatform === "mobile") {
-        // Mobile deep link
-        verifyUrl = `myapp://email-verify?token=${token}`;
-    }
-    else {
-        // Web URL
-        const WEB_URL = process.env.MAIL_SEND;
-        verifyUrl = `${WEB_URL}auth/email-verify?token=${token}`;
-    }
+    const verifyUrl = safePlatform === "mobile"
+        ? `myapp://email-verify?token=${token}`
+        : `${process.env.MAIL_SEND}auth/email-verify?token=${token}`;
     const html = `
-    <h2>Verify Your Organization Account</h2>
-    <p>Hello <b>${org.organizationName}</b>,</p>
-    <p>Your account was created successfully. Please click the link below to verify:</p>
-    <a href="${verifyUrl}"
-       style="padding:10px 15px; background:#4CAF50; color:white; border-radius:4px; text-decoration:none;">
-      Verify Your Account
-    </a>
-    <p>If the button doesn't work, copy and paste this link:</p>
-    <p>After verification, you can login using the login page.</p>
+    <h2>Verify Account</h2>
+    <p>Hello <b>${recipient.organizationName ?? "User"}</b>,</p>
+    <a href="${verifyUrl}">Verify Account</a>
   `;
     await (0, mailer_1.sendEmail)({
-        to: org.domainEmail,
+        to: recipient.email,
         subject: "Verify your account",
         html,
     });
@@ -51,39 +46,64 @@ class AuthService {
      * Signup user or organization
      */
     static async signup(name, email, password, type, platform, extra) {
-        // Fetch role based on type
+        // Role check
         const role = await prisma.role.findFirst({
             where: { name: type },
         });
-        if (!role)
+        if (!role) {
             throw new Error(auth_message_1.AUTH_MESSAGES.ROLE_NOT_FOUND);
-        // Check if email already exists
-        const existsUser = await prisma.user.findUnique({ where: { email } });
+        }
+        // Email uniqueness check
+        const existsUser = await prisma.user.findUnique({
+            where: { email },
+        });
         const existsOrg = await prisma.org.findUnique({
             where: { domainEmail: email },
         });
-        if (existsUser || existsOrg)
+        // Differentiated errors for frontend
+        if (existsUser && existsOrg) {
             throw new Error(auth_message_1.AUTH_MESSAGES.EMAIL_ALREADY_REGISTERED);
+        }
+        if (existsUser) {
+            throw new Error(auth_message_1.AUTH_MESSAGES.EMAIL_ALREADY_USER);
+        }
+        if (existsOrg) {
+            throw new Error(auth_message_1.AUTH_MESSAGES.EMAIL_ALREADY_ORG);
+        }
         // Hash password
-        const hashed = await (0, hash_1.hashPassword)(password);
-        // User signup
+        const hashedPassword = await (0, hash_1.hashPassword)(password);
+        /* ================= USER SIGNUP ================= */
         if (type === "user") {
             const user = await prisma.user.create({
                 data: {
                     name,
                     email,
-                    password: hashed,
+                    password: hashedPassword,
                     roleId: role.id,
                 },
             });
+            console.log(user);
+            await sendVerificationMail({
+                email: user.email,
+                identity: user.identity,
+                id: user.id
+            }, platform);
             return user;
         }
-        // Organization signup
+        /* ================= ORG SIGNUP ================= */
         if (type === "org") {
+            if ((0, helperFunction_1.isPublicEmail)(email)) {
+                throw new Error(auth_message_1.AUTH_MESSAGES.PUBLIC_EMAIL_MSG);
+            }
+            const emailCompany = (0, helperFunction_1.normalizeOrgName)((0, helperFunction_1.getCompanyFromEmail)(email));
+            const orgName = (0, helperFunction_1.normalizeOrgName)(extra.org_name);
+            // if (emailCompany !== orgName) {
+            //   throw new Error("Organization name must match the email domain");
+            // }
             const org = await prisma.org.create({
                 data: {
                     domainEmail: email,
-                    password: hashed,
+                    password: hashedPassword,
                     roleId: role.id,
                     organizationName: extra.org_name,
                     organizationCategory: extra.org_cat,
@@ -93,8 +113,15 @@ class AuthService {
                     profileImage: extra.pImg ?? null,
                 },
             });
-            // Send verification email
-            await sendVerificationMail(org, platform);
+            await sendVerificationMail({
+                email: org.domainEmail,
+                identity: org.identity,
+                id: org.id,
+                organizationName: org.organizationName,
+            }, platform);
+            if (extra.contactEmail) {
+                await sendVerificationMail({ email: extra.contactEmail }, platform);
+            }
             return org;
         }
         throw new Error(auth_message_1.AUTH_MESSAGES.INVALID_TYPE);
