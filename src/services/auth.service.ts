@@ -460,40 +460,94 @@ export class AuthService {
     });
 
     const payload = ticket.getPayload();
-    if (!payload) throw new Error(AUTH_MESSAGES.GOOGLE_LOGIN_FAILED);
+    if (!payload) {
+      throw new Error(AUTH_MESSAGES.GOOGLE_LOGIN_FAILED);
+    }
 
-    const { email, name, picture } = payload;
+    const {
+      email,
+      name,
+      picture,
+      sub: providerUserId, // Google unique user ID
+    } = payload;
 
+    if (!email || !providerUserId) {
+      throw new Error(AUTH_MESSAGES.GOOGLE_LOGIN_FAILED);
+    }
+
+    /* ================= ROLE ================= */
     const role = await prisma.role.findFirst({
       where: { name: "user" },
     });
 
-    if (!role) throw new Error(AUTH_MESSAGES.DEFAULT_ROLE_NOT_FOUND);
+    if (!role) {
+      throw new Error(AUTH_MESSAGES.DEFAULT_ROLE_NOT_FOUND);
+    }
 
-    const roleUUID = role.idnty;
+    /* ================= AUTH PROVIDER ================= */
+    let provider = await prisma.authProvider.findFirst({
+      where: { providerName: "google" },
+    });
 
-    let user = await prisma.user.findUnique({ where: { email } });
+    if (!provider) {
+      provider = await prisma.authProvider.create({
+        data: {
+          providerName: "google",
+          displayName: "Google",
+          status: true,
+        },
+      });
+    }
+
+    /* ================= USER ================= */
+    let user = await prisma.user.findUnique({
+      where: { email },
+    });
 
     if (!user) {
       user = await prisma.user.create({
         data: {
           name: name || "Google User",
           email,
-          password: "",
-          profileImage: picture || null,
+          password: "", // social login
+          profileImage: picture ?? null,
           roleId: role.id,
+          isActive: true, // auto-verified
         },
       });
     }
 
+    /* ================= SOCIAL ACCOUNT ================= */
+    const existingSocial = await prisma.socialAccount.findFirst({
+      where: {
+        userId: user.identity,
+        providerId: provider.identity,
+      },
+    });
+
+    if (!existingSocial) {
+      await prisma.socialAccount.create({
+        data: {
+          userId: user.identity,
+          providerId: provider.identity,
+          providerUserId,
+          providerEmail: email,
+        },
+      });
+    }
+
+    /* ================= TOKEN ================= */
     const token = generateToken({
       id: user.id,
       identity: user.identity,
       email,
-      roleId: roleUUID,
+      roleId: role.idnty,
       type: "user",
     });
 
-    return { user, token };
+    return {
+      user,
+      token,
+    };
   }
 }

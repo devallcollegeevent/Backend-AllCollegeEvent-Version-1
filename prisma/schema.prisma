@@ -148,7 +148,7 @@ model SocialAccount {
   id             Int     @unique @default(autoincrement())
   userId         String
   providerId     String
-  providerUserId String
+  providerUserId String?
   providerEmail  String?
 
   createdAt DateTime @default(now())
@@ -251,7 +251,7 @@ model Event {
 
   // Core Event
   title       String      @default("")
-  slug        String?
+  slug        String?     @unique
   description String?
   offers      String?
   mode        EventMode   @default(ONLINE)

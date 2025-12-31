@@ -1,6 +1,5 @@
 import { PUBLIC_EMAIL_DOMAINS } from "../constants/auth.message";
 
-
 /**
  * Extract full domain from email
  * example: admin@eclearnix.com -> eclearnix.com

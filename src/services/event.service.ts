@@ -6,6 +6,7 @@ import { getResolvedImageUrl } from "../utils/s3SignedUrl";
 import { cleanPayload } from "../utils/cleanPayload";
 import { Prisma } from "@prisma/client";
 import { EventMode } from "@prisma/client";
+import { generateSlug } from "../utils/slug";
 
 function validateLocation(mode: EventMode, location: any) {
   // Normalize empty values
@@ -102,16 +103,17 @@ export class EventService {
   static async createEvent(payload: any) {
     return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // console.log(req.body);
-      console.log("Collaborators:", payload.collaborators);
-      console.log("Calendars:", payload.calendars);
-      console.log("Tickets:", payload.tickets);
-      console.log("Perks:", payload.perkIdentities);
+      // console.log("Collaborators:", payload.collaborators);
+      // console.log("Calendars:", payload.calendars);
+      // console.log("Tickets:", payload.tickets);
+      // console.log("Perks:", payload.perkIdentities);
 
       // validateLocation(payload.mode, payload.location);
       // 1. Create Event
       const event = await tx.event.create({
         data: {
           title: payload.title,
+          slug:generateSlug(payload.title),
           description: payload.description,
           mode: payload.mode,
           categoryIdentity: payload.categoryIdentity,
