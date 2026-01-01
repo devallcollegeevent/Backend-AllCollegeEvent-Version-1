@@ -12,7 +12,7 @@ const router = Router();
  * @route GET /api/v1/organizations
  * @desc  Get list of all organizations
  */
-router.get("/organizations", authMiddleware, OrgController.getAllOrgs);
+router.get("/organizations", OrgController.getAllOrgs);
 
 /**
  * @route GET /api/v1/organizations/:orgId

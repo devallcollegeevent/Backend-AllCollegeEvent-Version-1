@@ -52,29 +52,25 @@ class EventController {
      */
     static async getEventById(req, res) {
         try {
-            // Extract route params
             const { orgId, eventId } = req.params;
-            // Fetch event details
             const event = await event_service_1.EventService.getEventById(orgId, eventId);
-            // Event not found
             if (!event) {
                 return res.status(404).json({
                     status: false,
                     message: event_message_1.EVENT_MESSAGES.EVENT_NOT_FOUND,
                 });
             }
-            // Success response
-            res.json({
+            return res.status(200).json({
                 status: true,
                 data: event,
                 message: event_message_1.EVENT_MESSAGES.EVENT_FETCHED,
             });
         }
         catch (err) {
-            // Internal server error
-            res
-                .status(500)
-                .json({ status: false, message: event_message_1.EVENT_MESSAGES.INTERNAL_ERROR });
+            return res.status(500).json({
+                status: false,
+                message: event_message_1.EVENT_MESSAGES.INTERNAL_ERROR,
+            });
         }
     }
     /**
@@ -200,20 +196,18 @@ class EventController {
      */
     static async getAllEvents(req, res) {
         try {
-            // Fetch all events
             const events = await event_service_1.EventService.getAllEventsService();
-            // Success response
-            res.status(200).json({
+            return res.status(200).json({
                 status: true,
                 data: events,
                 message: event_message_1.EVENT_MESSAGES.ALL_EVENTS_FETCHED,
             });
         }
         catch (err) {
-            // Internal server error
-            res
-                .status(500)
-                .json({ status: false, message: event_message_1.EVENT_MESSAGES.INTERNAL_ERROR });
+            return res.status(500).json({
+                status: false,
+                message: event_message_1.EVENT_MESSAGES.INTERNAL_ERROR,
+            });
         }
     }
     /**
@@ -221,22 +215,25 @@ class EventController {
      */
     static async getSingleEvent(req, res) {
         try {
-            // Extract event ID
             const { eventId } = req.params;
-            // Fetch event details
             const event = await event_service_1.EventService.getSingleEventsService(eventId);
-            // Success response
-            res.status(200).json({
+            if (!event) {
+                return res.status(404).json({
+                    status: false,
+                    message: event_message_1.EVENT_MESSAGES.EVENT_NOT_FOUND,
+                });
+            }
+            return res.status(200).json({
                 status: true,
                 data: event,
                 message: event_message_1.EVENT_MESSAGES.EVENT_FETCHED,
             });
         }
         catch (err) {
-            // Internal server error
-            res
-                .status(500)
-                .json({ status: false, message: event_message_1.EVENT_MESSAGES.INTERNAL_ERROR });
+            return res.status(500).json({
+                status: false,
+                message: event_message_1.EVENT_MESSAGES.INTERNAL_ERROR,
+            });
         }
     }
     /**

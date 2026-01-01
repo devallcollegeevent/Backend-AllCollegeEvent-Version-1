@@ -20,8 +20,19 @@ export const EVENT_MESSAGES = {
 
   ORG_ID_REQUIRED: "Org Id Required",
 
+  EVENT_ID_REQUIRED: "Event ID is required",
+
   // Errors
   INTERNAL_ERROR: "Internal server error",
 
-  APPROVED:"APPROVED"
+  APPROVED: "APPROVED",
+
+  ONLINE_MEET_LINK_REQ: "Online meet link is required for ONLINE events",
+  OFFLINE_VALIDATION:
+    "Offline location (country, state, city, mapLink) is required",
+
+  ONLINE_OFFLINE_VALIDATION:
+    "Both online and offline location details are required",
+
+  ORG_AND_EVENT_ID_REQ: "Organization ID and Event ID are required",
 };

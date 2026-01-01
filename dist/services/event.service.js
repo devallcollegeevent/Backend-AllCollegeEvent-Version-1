@@ -4,11 +4,9 @@ exports.EventService = void 0;
 const prisma = require("../config/db.config");
 const event_status_message_1 = require("../constants/event.status.message");
 const event_message_1 = require("../constants/event.message");
-const s3SignedUrl_1 = require("../utils/s3SignedUrl");
 const cleanPayload_1 = require("../utils/cleanPayload");
 const client_1 = require("@prisma/client");
 const slug_1 = require("../utils/slug");
-// import { Prisma } from "@prisma/client";
 function validateLocation(mode, location) {
     // Normalize empty values
     if (!location || typeof location !== "object") {
@@ -292,17 +290,19 @@ class EventService {
         });
     }
     static async getEventById(orgId, eventId) {
-        // base url used for generating full image path
-        const BASE_URL = process.env.BASE_URL ?? "";
-        // fetching specific event that belongs to given organization
+        if (!orgId || !eventId) {
+            throw new Error("Organization ID and Event ID are required");
+        }
         const event = await prisma.event.findFirst({
             where: {
                 identity: eventId,
                 orgIdentity: orgId,
             },
             include: {
+                // Organization
                 org: {
                     select: {
+                        identity: true,
                         organizationName: true,
                         organizationCategory: true,
                         city: true,
@@ -315,15 +315,80 @@ class EventService {
                         logoUrl: true,
                     },
                 },
+                // Certification
+                cert: {
+                    select: {
+                        identity: true,
+                        certName: true,
+                    },
+                },
+                // Location
+                location: true,
+                // Calendars
+                calendars: true,
+                // Tickets
+                tickets: true,
+                // Perks
+                eventPerks: {
+                    include: {
+                        perk: true,
+                    },
+                },
+                // Accommodations
+                eventAccommodations: {
+                    include: {
+                        accommodation: true,
+                    },
+                },
+                // Collaborators
+                Collaborator: {
+                    include: {
+                        member: {
+                            select: {
+                                identity: true,
+                                name: true,
+                                email: true,
+                                mobile: true,
+                            },
+                        },
+                        org: {
+                            select: {
+                                identity: true,
+                                organizationName: true,
+                                logoUrl: true,
+                            },
+                        },
+                    },
+                },
             },
         });
-        // returning null if event is not found
         if (!event)
             return null;
-        // mapping image url to include base URL
+        const typedEvent = event;
+        // ✅ Final shaped response (same pattern as other APIs)
         return {
-            ...event,
-            bannerImage: (0, s3SignedUrl_1.getResolvedImageUrl)(event.bannerImage),
+            identity: typedEvent.identity,
+            title: typedEvent.title,
+            slug: typedEvent.slug,
+            description: typedEvent.description,
+            mode: typedEvent.mode,
+            status: typedEvent.status,
+            createdAt: typedEvent.createdAt,
+            bannerImages: typedEvent.bannerImages, // ✅ S3 URLs directly
+            eventLink: typedEvent.eventLink,
+            paymentLink: typedEvent.paymentLink,
+            org: typedEvent.org,
+            cert: typedEvent.cert,
+            location: typedEvent.location,
+            calendars: typedEvent.calendars,
+            tickets: typedEvent.tickets,
+            perks: typedEvent.eventPerks.map((p) => p.perk),
+            accommodations: typedEvent.eventAccommodations.map((a) => a.accommodation),
+            collaborators: typedEvent.Collaborator.map((c) => ({
+                role: c.role,
+                member: c.member,
+                organization: c.org,
+            })),
         };
     }
     static async updateEvent(orgId, eventId, data) {
@@ -353,45 +418,16 @@ class EventService {
         });
     }
     static async getAllEventsService() {
-        const BASE_URL = process.env.BASE_URL ?? "";
-        // fetch ONLY approved events
-        const rawEvents = await prisma.event.findMany({
-            where: {
-                status: event_message_1.EVENT_MESSAGES.APPROVED,
+        const events = await prisma.event.findMany({
+            // ✅ NO status condition (fetch all)
+            orderBy: {
+                createdAt: "desc",
             },
-            orderBy: { createdAt: "desc" },
             include: {
+                // Organization
                 org: {
                     select: {
-                        organizationName: true,
-                        organizationCategory: true,
-                        city: true,
-                        state: true,
-                        country: true,
-                        profileImage: true,
-                        whatsapp: true,
-                        instagram: true,
-                        linkedIn: true, // <-- FIXED (case sensitive)
-                        logoUrl: true,
-                    },
-                },
-            },
-        });
-        // map full image path
-        const events = rawEvents.map((e) => ({
-            ...e,
-            bannerImage: (0, s3SignedUrl_1.getResolvedImageUrl)(e.bannerImage),
-        }));
-        return events;
-    }
-    static async getSingleEventsService(eventId) {
-        const BASE_URL = process.env.BASE_URL ?? "";
-        // fetching single event by its identity
-        const rawEvent = await prisma.event.findUnique({
-            where: { identity: eventId },
-            include: {
-                org: {
-                    select: {
+                        identity: true,
                         organizationName: true,
                         organizationCategory: true,
                         city: true,
@@ -404,17 +440,180 @@ class EventService {
                         logoUrl: true,
                     },
                 },
+                // Certification
+                cert: {
+                    select: {
+                        identity: true,
+                        certName: true,
+                    },
+                },
+                // Location
+                location: true,
+                // Calendars
+                calendars: true,
+                // Tickets
+                tickets: true,
+                // Perks
+                eventPerks: {
+                    include: {
+                        perk: true,
+                    },
+                },
+                // Accommodations
+                eventAccommodations: {
+                    include: {
+                        accommodation: true,
+                    },
+                },
+                // Collaborators
+                Collaborator: {
+                    include: {
+                        member: {
+                            select: {
+                                identity: true,
+                                name: true,
+                                email: true,
+                                mobile: true,
+                            },
+                        },
+                        org: {
+                            select: {
+                                identity: true,
+                                organizationName: true,
+                                logoUrl: true,
+                            },
+                        },
+                    },
+                },
             },
         });
-        // returning null if event doesn't exist
-        if (!rawEvent)
+        const typedEvents = events;
+        // ✅ Final shaped response
+        return typedEvents.map((event) => ({
+            identity: event.identity,
+            title: event.title,
+            slug: event.slug,
+            description: event.description,
+            mode: event.mode,
+            status: event.status,
+            createdAt: event.createdAt,
+            bannerImages: event.bannerImages, // S3 URLs directly
+            eventLink: event.eventLink,
+            paymentLink: event.paymentLink,
+            org: event.org,
+            cert: event.cert,
+            location: event.location,
+            calendars: event.calendars,
+            tickets: event.tickets,
+            perks: event.eventPerks.map((p) => p.perk),
+            accommodations: event.eventAccommodations.map((a) => a.accommodation),
+            collaborators: event.Collaborator.map((c) => ({
+                role: c.role,
+                member: c.member,
+                organization: c.org,
+            })),
+        }));
+    }
+    static async getSingleEventsService(eventId) {
+        if (!eventId) {
+            throw new Error("Event ID is required");
+        }
+        const event = await prisma.event.findUnique({
+            where: {
+                identity: eventId,
+            },
+            include: {
+                // Organization
+                org: {
+                    select: {
+                        identity: true,
+                        organizationName: true,
+                        organizationCategory: true,
+                        city: true,
+                        state: true,
+                        country: true,
+                        profileImage: true,
+                        whatsapp: true,
+                        instagram: true,
+                        linkedIn: true,
+                        logoUrl: true,
+                    },
+                },
+                // Certification
+                cert: {
+                    select: {
+                        identity: true,
+                        certName: true,
+                    },
+                },
+                // Location
+                location: true,
+                // Calendars
+                calendars: true,
+                // Tickets
+                tickets: true,
+                // Perks
+                eventPerks: {
+                    include: {
+                        perk: true,
+                    },
+                },
+                // Accommodations
+                eventAccommodations: {
+                    include: {
+                        accommodation: true,
+                    },
+                },
+                // Collaborators
+                Collaborator: {
+                    include: {
+                        member: {
+                            select: {
+                                identity: true,
+                                name: true,
+                                email: true,
+                                mobile: true,
+                            },
+                        },
+                        org: {
+                            select: {
+                                identity: true,
+                                organizationName: true,
+                                logoUrl: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+        if (!event)
             return null;
-        // adding absolute image path
-        const event = {
-            ...rawEvent,
-            bannerImage: (0, s3SignedUrl_1.getResolvedImageUrl)(rawEvent.bannerImage),
+        const typedEvent = event;
+        // ✅ Final shaped response (same as other APIs)
+        return {
+            identity: typedEvent.identity,
+            title: typedEvent.title,
+            slug: typedEvent.slug,
+            description: typedEvent.description,
+            mode: typedEvent.mode,
+            status: typedEvent.status,
+            createdAt: typedEvent.createdAt,
+            bannerImages: typedEvent.bannerImages, // S3 URLs directly
+            eventLink: typedEvent.eventLink,
+            paymentLink: typedEvent.paymentLink,
+            org: typedEvent.org,
+            cert: typedEvent.cert,
+            location: typedEvent.location,
+            calendars: typedEvent.calendars,
+            tickets: typedEvent.tickets,
+            perks: typedEvent.eventPerks.map((p) => p.perk),
+            accommodations: typedEvent.eventAccommodations.map((a) => a.accommodation),
+            collaborators: typedEvent.Collaborator.map((c) => ({
+                role: c.role,
+                member: c.member,
+                organization: c.org,
+            })),
         };
-        return event;
     }
     static getAllStatuses() {
         return event_status_message_1.EVENT_STATUS_LIST;

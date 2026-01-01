@@ -12,59 +12,55 @@ export class EventController {
   /**
    * Get all events of a specific organization (Public / Org view)
    */
-static async getOrgEvents(req: Request, res: Response) {
-  try {
-    const identity = String(req.params.orgId);
+  static async getOrgEvents(req: Request, res: Response) {
+    try {
+      const identity = String(req.params.orgId);
 
-    if (!identity) {
+      if (!identity) {
+        return res.status(200).json({
+          status: false,
+          message: EVENT_MESSAGES.ORG_ID_REQUIRED,
+        });
+      }
+
+      const result = await EventService.getEventsByOrg(identity);
+
       return res.status(200).json({
+        status: true,
+        count: result.count, // total events
+        data: result.events, // events list
+        message: EVENT_MESSAGES.EVENTS_FETCHED,
+      });
+    } catch (err: any) {
+      const safeErrors = [
+        EVENT_MESSAGES.ORG_ID_REQUIRED,
+        EVENT_MESSAGES.EVENTS_NOT_FOUND,
+      ];
+
+      if (safeErrors.includes(err.message)) {
+        return res.status(200).json({
+          status: false,
+          message: err.message,
+        });
+      }
+
+      return res.status(500).json({
         status: false,
-        message: EVENT_MESSAGES.ORG_ID_REQUIRED,
+        message: EVENT_MESSAGES.INTERNAL_ERROR,
+        error: err.message,
       });
     }
-
-    const result = await EventService.getEventsByOrg(identity);
-
-    return res.status(200).json({
-      status: true,
-      count: result.count,      // ✅ total events
-      data: result.events,      // ✅ events list
-      message: EVENT_MESSAGES.EVENTS_FETCHED,
-    });
-  } catch (err: any) {
-    const safeErrors = [
-      EVENT_MESSAGES.ORG_ID_REQUIRED,
-      EVENT_MESSAGES.EVENTS_NOT_FOUND,
-    ];
-
-    if (safeErrors.includes(err.message)) {
-      return res.status(200).json({
-        status: false,
-        message: err.message,
-      });
-    }
-
-    return res.status(500).json({
-      status: false,
-      message: EVENT_MESSAGES.INTERNAL_ERROR,
-      error: err.message,
-    });
   }
-}
-
 
   /**
    * Get a single event by organization and event ID
    */
   static async getEventById(req: Request, res: Response) {
     try {
-      // Extract route params
       const { orgId, eventId } = req.params;
 
-      // Fetch event details
       const event = await EventService.getEventById(orgId, eventId);
 
-      // Event not found
       if (!event) {
         return res.status(404).json({
           status: false,
@@ -72,17 +68,16 @@ static async getOrgEvents(req: Request, res: Response) {
         });
       }
 
-      // Success response
-      res.json({
+      return res.status(200).json({
         status: true,
         data: event,
         message: EVENT_MESSAGES.EVENT_FETCHED,
       });
     } catch (err) {
-      // Internal server error
-      res
-        .status(500)
-        .json({ status: false, message: EVENT_MESSAGES.INTERNAL_ERROR });
+      return res.status(500).json({
+        status: false,
+        message: EVENT_MESSAGES.INTERNAL_ERROR,
+      });
     }
   }
 
@@ -227,20 +222,18 @@ static async getOrgEvents(req: Request, res: Response) {
    */
   static async getAllEvents(req: Request, res: Response) {
     try {
-      // Fetch all events
       const events = await EventService.getAllEventsService();
 
-      // Success response
-      res.status(200).json({
+      return res.status(200).json({
         status: true,
         data: events,
         message: EVENT_MESSAGES.ALL_EVENTS_FETCHED,
       });
     } catch (err) {
-      // Internal server error
-      res
-        .status(500)
-        .json({ status: false, message: EVENT_MESSAGES.INTERNAL_ERROR });
+      return res.status(500).json({
+        status: false,
+        message: EVENT_MESSAGES.INTERNAL_ERROR,
+      });
     }
   }
 
@@ -249,23 +242,27 @@ static async getOrgEvents(req: Request, res: Response) {
    */
   static async getSingleEvent(req: Request, res: Response) {
     try {
-      // Extract event ID
       const { eventId } = req.params;
 
-      // Fetch event details
       const event = await EventService.getSingleEventsService(eventId);
 
-      // Success response
-      res.status(200).json({
+      if (!event) {
+        return res.status(404).json({
+          status: false,
+          message: EVENT_MESSAGES.EVENT_NOT_FOUND,
+        });
+      }
+
+      return res.status(200).json({
         status: true,
         data: event,
         message: EVENT_MESSAGES.EVENT_FETCHED,
       });
     } catch (err) {
-      // Internal server error
-      res
-        .status(500)
-        .json({ status: false, message: EVENT_MESSAGES.INTERNAL_ERROR });
+      return res.status(500).json({
+        status: false,
+        message: EVENT_MESSAGES.INTERNAL_ERROR,
+      });
     }
   }
 

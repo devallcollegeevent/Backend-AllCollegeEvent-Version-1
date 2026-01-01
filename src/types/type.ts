@@ -1,4 +1,5 @@
 import { Request } from "express";
+import { Prisma } from "@prisma/client";
 
 export interface EventType {
   identity: string;
@@ -73,3 +74,28 @@ export interface AuthRequest extends Request {
 }
 
 export type Platform = "web" | "mobile";
+
+/**
+ * Prisma payload type for Event with all required relations
+ */
+export type EventWithRelations = Prisma.EventGetPayload<{
+  include: {
+    org: true;
+    cert: true;
+    location: true;
+    calendars: true;
+    tickets: true;
+    eventPerks: {
+      include: { perk: true };
+    };
+    eventAccommodations: {
+      include: { accommodation: true };
+    };
+    Collaborator: {
+      include: {
+        member: true;
+        org: true;
+      };
+    };
+  };
+}>;

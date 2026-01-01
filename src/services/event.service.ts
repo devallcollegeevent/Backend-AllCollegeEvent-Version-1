@@ -1,5 +1,5 @@
 const prisma = require("../config/db.config");
-import { EventType } from "../types/type";
+import { EventType, EventWithRelations } from "../types/type";
 import { EVENT_STATUS_LIST } from "../constants/event.status.message";
 import { EVENT_MESSAGES } from "../constants/event.message";
 import { getResolvedImageUrl } from "../utils/s3SignedUrl";
@@ -7,7 +7,6 @@ import { cleanPayload } from "../utils/cleanPayload";
 import { Prisma } from "@prisma/client";
 import { EventMode } from "@prisma/client";
 import { generateSlug } from "../utils/slug";
-// import { Prisma } from "@prisma/client";
 
 function validateLocation(mode: EventMode, location: any) {
   // Normalize empty values
@@ -17,7 +16,7 @@ function validateLocation(mode: EventMode, location: any) {
 
   if (mode === EventMode.ONLINE) {
     if (!location?.onlineMeetLink) {
-      throw new Error("Online meet link is required for ONLINE events");
+      throw new Error(EVENT_MESSAGES.ONLINE_MEET_LINK_REQ);
     }
   }
 
@@ -28,9 +27,7 @@ function validateLocation(mode: EventMode, location: any) {
       !location?.city ||
       !location?.mapLink
     ) {
-      throw new Error(
-        "Offline location (country, state, city, mapLink) is required"
-      );
+      throw new Error(EVENT_MESSAGES.OFFLINE_VALIDATION);
     }
   }
 
@@ -42,7 +39,7 @@ function validateLocation(mode: EventMode, location: any) {
       !location?.city ||
       !location?.mapLink
     ) {
-      throw new Error("Both online and offline location details are required");
+      throw new Error(EVENT_MESSAGES.ONLINE_OFFLINE_VALIDATION);
     }
   }
 }
@@ -57,30 +54,6 @@ function buildOrgSocialUpdate(socialLinks: any) {
   return data;
 }
 
-/**
- * Prisma payload type for Event with all required relations
- */
-type EventWithRelations = Prisma.EventGetPayload<{
-  include: {
-    org: true;
-    cert: true;
-    location: true;
-    calendars: true;
-    tickets: true;
-    eventPerks: {
-      include: { perk: true };
-    };
-    eventAccommodations: {
-      include: { accommodation: true };
-    };
-    Collaborator: {
-      include: {
-        member: true;
-        org: true;
-      };
-    };
-  };
-}>;
 
 export class EventService {
   static async getEventsByOrg(identity: string) {
@@ -88,7 +61,7 @@ export class EventService {
       throw new Error(EVENT_MESSAGES.ORG_ID_REQUIRED);
     }
 
-    // ✅ Fetch events + count in one transaction
+    // Fetch events + count in one transaction
     const [events, count] = await prisma.$transaction([
       prisma.event.findMany({
         where: {
@@ -178,14 +151,14 @@ export class EventService {
       }),
     ]);
 
-    // ✅ Explicit typing (THIS FIXES ALL implicit `any` ERRORS)
+    // Explicit typing (THIS FIXES ALL implicit `any` ERRORS)
     const typedEvents: EventWithRelations[] = events;
 
     if (!typedEvents.length) {
       throw new Error(EVENT_MESSAGES.EVENTS_NOT_FOUND);
     }
 
-    // ✅ Final shaped response
+    // Final shaped response
     return {
       count,
       events: typedEvents.map((event) => ({
@@ -358,22 +331,21 @@ export class EventService {
     });
   }
 
-  static async getEventById(
-    orgId: string,
-    eventId: string
-  ): Promise<EventType | null> {
-    // base url used for generating full image path
-    const BASE_URL = process.env.BASE_URL ?? "";
+  static async getEventById(orgId: string, eventId: string) {
+    if (!orgId || !eventId) {
+      throw new Error(EVENT_MESSAGES.ORG_AND_EVENT_ID_REQ);
+    }
 
-    // fetching specific event that belongs to given organization
     const event = await prisma.event.findFirst({
       where: {
         identity: eventId,
         orgIdentity: orgId,
       },
       include: {
+        // Organization
         org: {
           select: {
+            identity: true,
             organizationName: true,
             organizationCategory: true,
             city: true,
@@ -386,16 +358,96 @@ export class EventService {
             logoUrl: true,
           },
         },
+
+        // Certification
+        cert: {
+          select: {
+            identity: true,
+            certName: true,
+          },
+        },
+
+        // Location
+        location: true,
+
+        // Calendars
+        calendars: true,
+
+        // Tickets
+        tickets: true,
+
+        // Perks
+        eventPerks: {
+          include: {
+            perk: true,
+          },
+        },
+
+        // Accommodations
+        eventAccommodations: {
+          include: {
+            accommodation: true,
+          },
+        },
+
+        // Collaborators
+        Collaborator: {
+          include: {
+            member: {
+              select: {
+                identity: true,
+                name: true,
+                email: true,
+                mobile: true,
+              },
+            },
+            org: {
+              select: {
+                identity: true,
+                organizationName: true,
+                logoUrl: true,
+              },
+            },
+          },
+        },
       },
     });
 
-    // returning null if event is not found
     if (!event) return null;
 
-    // mapping image url to include base URL
+    const typedEvent: EventWithRelations = event;
+
+    // Final shaped response (same pattern as other APIs)
     return {
-      ...event,
-      bannerImage: getResolvedImageUrl(event.bannerImage),
+      identity: typedEvent.identity,
+      title: typedEvent.title,
+      slug: typedEvent.slug,
+      description: typedEvent.description,
+      mode: typedEvent.mode,
+      status: typedEvent.status,
+      createdAt: typedEvent.createdAt,
+
+      bannerImages: typedEvent.bannerImages, // S3 URLs directly
+
+      eventLink: typedEvent.eventLink,
+      paymentLink: typedEvent.paymentLink,
+
+      org: typedEvent.org,
+      cert: typedEvent.cert,
+      location: typedEvent.location,
+      calendars: typedEvent.calendars,
+      tickets: typedEvent.tickets,
+
+      perks: typedEvent.eventPerks.map((p) => p.perk),
+      accommodations: typedEvent.eventAccommodations.map(
+        (a) => a.accommodation
+      ),
+
+      collaborators: typedEvent.Collaborator.map((c) => ({
+        role: c.role,
+        member: c.member,
+        organization: c.org,
+      })),
     };
   }
 
@@ -427,53 +479,17 @@ export class EventService {
     });
   }
 
-  static async getAllEventsService(): Promise<EventType[]> {
-    const BASE_URL = process.env.BASE_URL ?? "";
-
-    // fetch ONLY approved events
-    const rawEvents = await prisma.event.findMany({
-      where: {
-        status: EVENT_MESSAGES.APPROVED,
+  static async getAllEventsService() {
+    const events = await prisma.event.findMany({
+      // NO status condition (fetch all)
+      orderBy: {
+        createdAt: "desc",
       },
-      orderBy: { createdAt: "desc" },
       include: {
+        // Organization
         org: {
           select: {
-            organizationName: true,
-            organizationCategory: true,
-            city: true,
-            state: true,
-            country: true,
-            profileImage: true,
-            whatsapp: true,
-            instagram: true,
-            linkedIn: true, // <-- FIXED (case sensitive)
-            logoUrl: true,
-          },
-        },
-      },
-    });
-
-    // map full image path
-    const events: EventType[] = rawEvents.map((e: EventType) => ({
-      ...e,
-      bannerImage: getResolvedImageUrl(e.bannerImage),
-    }));
-
-    return events;
-  }
-
-  static async getSingleEventsService(
-    eventId: string
-  ): Promise<EventType | null> {
-    const BASE_URL = process.env.BASE_URL ?? "";
-
-    // fetching single event by its identity
-    const rawEvent = await prisma.event.findUnique({
-      where: { identity: eventId },
-      include: {
-        org: {
-          select: {
+            identity: true,
             organizationName: true,
             organizationCategory: true,
             city: true,
@@ -486,19 +502,212 @@ export class EventService {
             logoUrl: true,
           },
         },
+
+        // Certification
+        cert: {
+          select: {
+            identity: true,
+            certName: true,
+          },
+        },
+
+        // Location
+        location: true,
+
+        // Calendars
+        calendars: true,
+
+        // Tickets
+        tickets: true,
+
+        // Perks
+        eventPerks: {
+          include: {
+            perk: true,
+          },
+        },
+
+        // Accommodations
+        eventAccommodations: {
+          include: {
+            accommodation: true,
+          },
+        },
+
+        // Collaborators
+        Collaborator: {
+          include: {
+            member: {
+              select: {
+                identity: true,
+                name: true,
+                email: true,
+                mobile: true,
+              },
+            },
+            org: {
+              select: {
+                identity: true,
+                organizationName: true,
+                logoUrl: true,
+              },
+            },
+          },
+        },
       },
     });
 
-    // returning null if event doesn't exist
-    if (!rawEvent) return null;
+    const typedEvents: EventWithRelations[] = events;
 
-    // adding absolute image path
-    const event: EventType = {
-      ...rawEvent,
-      bannerImage: getResolvedImageUrl(rawEvent.bannerImage),
+    // Final shaped response
+    return typedEvents.map((event) => ({
+      identity: event.identity,
+      title: event.title,
+      slug: event.slug,
+      description: event.description,
+      mode: event.mode,
+      status: event.status,
+      createdAt: event.createdAt,
+
+      bannerImages: event.bannerImages, // S3 URLs directly
+
+      eventLink: event.eventLink,
+      paymentLink: event.paymentLink,
+
+      org: event.org,
+      cert: event.cert,
+      location: event.location,
+      calendars: event.calendars,
+      tickets: event.tickets,
+
+      perks: event.eventPerks.map((p) => p.perk),
+      accommodations: event.eventAccommodations.map((a) => a.accommodation),
+
+      collaborators: event.Collaborator.map((c) => ({
+        role: c.role,
+        member: c.member,
+        organization: c.org,
+      })),
+    }));
+  }
+
+  static async getSingleEventsService(eventId: string) {
+    if (!eventId) {
+      throw new Error(EVENT_MESSAGES.EVENT_ID_REQUIRED);
+    }
+
+    const event = await prisma.event.findUnique({
+      where: {
+        identity: eventId,
+      },
+      include: {
+        // Organization
+        org: {
+          select: {
+            identity: true,
+            organizationName: true,
+            organizationCategory: true,
+            city: true,
+            state: true,
+            country: true,
+            profileImage: true,
+            whatsapp: true,
+            instagram: true,
+            linkedIn: true,
+            logoUrl: true,
+          },
+        },
+
+        // Certification
+        cert: {
+          select: {
+            identity: true,
+            certName: true,
+          },
+        },
+
+        // Location
+        location: true,
+
+        // Calendars
+        calendars: true,
+
+        // Tickets
+        tickets: true,
+
+        // Perks
+        eventPerks: {
+          include: {
+            perk: true,
+          },
+        },
+
+        // Accommodations
+        eventAccommodations: {
+          include: {
+            accommodation: true,
+          },
+        },
+
+        // Collaborators
+        Collaborator: {
+          include: {
+            member: {
+              select: {
+                identity: true,
+                name: true,
+                email: true,
+                mobile: true,
+              },
+            },
+            org: {
+              select: {
+                identity: true,
+                organizationName: true,
+                logoUrl: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!event) return null;
+
+    const typedEvent: EventWithRelations = event;
+
+    // Final shaped response (same as other APIs)
+    return {
+      identity: typedEvent.identity,
+      title: typedEvent.title,
+      slug: typedEvent.slug,
+      description: typedEvent.description,
+      mode: typedEvent.mode,
+      status: typedEvent.status,
+      createdAt: typedEvent.createdAt,
+
+      bannerImages: typedEvent.bannerImages, // S3 URLs directly
+
+      eventLink: typedEvent.eventLink,
+      paymentLink: typedEvent.paymentLink,
+
+      org: typedEvent.org,
+      cert: typedEvent.cert,
+      location: typedEvent.location,
+      calendars: typedEvent.calendars,
+      tickets: typedEvent.tickets,
+
+      perks: typedEvent.eventPerks.map((p) => p.perk),
+      accommodations: typedEvent.eventAccommodations.map(
+        (a) => a.accommodation
+      ),
+
+      collaborators: typedEvent.Collaborator.map((c) => ({
+        role: c.role,
+        member: c.member,
+        organization: c.org,
+      })),
     };
-
-    return event;
   }
 
   static getAllStatuses() {
