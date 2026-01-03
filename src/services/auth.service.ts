@@ -20,7 +20,6 @@ import { Platform } from "../types/type";
  * Send organization account verification email
  * Triggered after successful org signup
  */
-
 const sendVerificationMail = async (
   recipient: {
     email: string;
