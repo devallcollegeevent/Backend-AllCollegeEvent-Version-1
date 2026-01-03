@@ -13,7 +13,6 @@ const router = Router();
  */
 router.get(
   "/organizations/:orgId/events",
-  authMiddleware,
   validate(eventValidation.getAll),
   EventController.getOrgEvents
 );

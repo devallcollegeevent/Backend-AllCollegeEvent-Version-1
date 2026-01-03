@@ -5,6 +5,7 @@ interface SendEmailProps {
   to: string;       // Recipient email address
   subject: string;  // Email subject
   html: string;     // HTML email body
+  text?:String;
 }
 
 /**
@@ -16,32 +17,27 @@ export const sendEmail = async ({
   to,
   subject,
   html,
+  text, //  accept text
 }: SendEmailProps): Promise<void> => {
 
-  // Create SMTP transporter using Gmail service
   const transporter = nodemailer.createTransport({
     service: "gmail",
-
-    // SMTP authentication
     auth: {
-      user: process.env.SMTP_USER as string, // Gmail address
-      pass: process.env.SMTP_PASS as string, // App password
+      user: process.env.SMTP_USER as string,
+      pass: process.env.SMTP_PASS as string,
     },
-
-    // TLS configuration (allows Gmail certificates)
     tls: {
       rejectUnauthorized: false,
     },
   });
 
-  // Verify SMTP connection before sending mail
   await transporter.verify();
 
-  // Send email
   await transporter.sendMail({
-    from: process.env.FROM_EMAIL as string, // Sender email
-    to,                                     // Receiver email
-    subject,                                // Email subject
-    html,                                   // Email content (HTML)
+    from: process.env.FROM_EMAIL as string,
+    to,
+    subject,
+    html,
+    text, // ✅PASS TEXT
   });
 };
