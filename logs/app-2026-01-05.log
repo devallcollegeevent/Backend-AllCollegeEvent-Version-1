@@ -63,3 +63,6 @@ Unique constraint failed on the fields: (`collaboratorMemberId`,`eventIdentity`)
 [2026-01-05 18:50:49] [INFO] → Incoming → GET /api/v1/events
 [2026-01-05 19:13:08] [INFO] → Incoming → POST /api/v1/organizations/35a6560f-503d-4039-8558-ddf82071898a/events
 [2026-01-05 19:13:39] [INFO] → Incoming → GET /api/v1/events
+[2026-01-05 20:20:48] [INFO] → Incoming → POST /api/v1/organizations/35a6560f-503d-4039-8558-ddf82071898a/events
+[2026-01-05 20:20:48] [ERROR] → Error → POST /api/v1/organizations/35a6560f-503d-4039-8558-ddf82071898a/events | Message: Missing required key 'Bucket' in params
+[2026-01-05 20:21:20] [INFO] → Incoming → POST /api/v1/organizations/35a6560f-503d-4039-8558-ddf82071898a/events

@@ -69,39 +69,31 @@ export class EventService {
     --------------------------------------------------- */
       if (payload.collaborators?.length) {
         for (const c of payload.collaborators) {
-          /**
-           * Expected collaborator payload:
-           * {
-           *   hostIdentity,
-           *   organizerName,
-           *   organizerNumber,
-           *   organizationName,
-           *   orgDept?,
-           *   location?,
-           *   role?
-           * }
-           */
+          // 🔒 Guard (required field)
+          if (!c.organizerNumber) {
+            throw new Error("organizerNumber is required for collaborator");
+          }
 
-          // 3.1 Upsert CollaboratorMember
+          // 1️⃣ Create a NEW collaborator member for EACH payload item
           const member = await tx.collaboratorMember.create({
             data: {
+              organizerNumber: c.organizerNumber,
               hostIdentity: c.hostIdentity ?? null,
               organizerName: c.organizerName ?? null,
-              organizerNumber: c.organizerNumber ?? null,
               organizationName: c.organizationName ?? null,
               orgDept: c.orgDept ?? null,
               location: c.location ?? null,
             },
           });
 
-          // 3.2 Create Collaborator mapping (Event ↔ Member)
-          await tx.collaborator.createMany({
-            data: payload.collaborators.map(() => ({
+          // 2️⃣ Create mapping (ONE row per member)
+          await tx.collaborator.create({
+            data: {
               collaboratorMemberId: member.identity,
               eventIdentity: eventId,
               orgIdentity: payload.orgIdentity,
-            })),
-            skipDuplicates: true,
+              role: c.role ?? null,
+            },
           });
         }
       }
