@@ -22,19 +22,46 @@ const sendVerificationMail = async (recipient, platform = "web") => {
     const token = recipient.identity && recipient.id
         ? (0, jwt_1.generateToken)({ identity: recipient.identity, id: recipient.id })
         : null;
-    const safePlatform = platform === "mobile" ? "mobile" : "web";
-    const verifyUrl = safePlatform === "mobile"
-        ? `myapp://email-verify?token=${token}`
-        : `${process.env.MAIL_SEND}auth/email-verify?token=${token}`;
+    if (!token) {
+        throw new Error("Token generation failed");
+    }
+    // ALWAYS WEB URL IN EMAIL
+    const verifyUrl = `${process.env.MAIL_SEND}auth/email-verify?token=${token}`;
     const html = `
-    <h2>Verify Account</h2>
-    <p>Hello <b>${recipient.organizationName ?? "User"}</b>,</p>
-    <a href="${verifyUrl}">Verify Account</a>
+    <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+      <h2>Verify Account</h2>
+
+      <p>Hello <strong>${recipient.organizationName ?? "User"}</strong>,</p>
+
+      <p>Please click the button below to verify your account:</p>
+
+      <a
+        href="${verifyUrl}"
+        style="
+          display: inline-block;
+          padding: 12px 20px;
+          background-color: #2563eb;
+          color: #ffffff !important;
+          text-decoration: none;
+          border-radius: 6px;
+          font-weight: bold;
+        "
+      >
+        Verify Account
+      </a>
+
+      <p style="margin-top: 16px; font-size: 12px; color: #555;">
+        If the button doesn’t work, copy and paste this link into your browser:
+        <br />
+        ${verifyUrl}
+      </p>
+    </div>
   `;
     await (0, mailer_1.sendEmail)({
         to: recipient.email,
         subject: "Verify your account",
         html,
+        text: `Verify your account: ${verifyUrl}`
     });
 };
 /**

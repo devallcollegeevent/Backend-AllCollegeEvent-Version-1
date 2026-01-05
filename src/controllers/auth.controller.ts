@@ -18,7 +18,7 @@ export class AuthController {
         email,
         password,
         type,
-        platform = "web",
+        platform = "web", 
         ...rest
       } = req.body;
 
@@ -45,6 +45,9 @@ export class AuthController {
         AUTH_MESSAGES.ROLE_NOT_FOUND,
         AUTH_MESSAGES.EMAIL_ALREADY_REGISTERED,
         AUTH_MESSAGES.INVALID_TYPE,
+        AUTH_MESSAGES.EMAIL_ALREADY_USER,
+        AUTH_MESSAGES.EMAIL_ALREADY_ORG,
+        AUTH_MESSAGES.PUBLIC_EMAIL_MSG
       ];
 
       if (safeErrors.includes(err.message)) {
@@ -139,6 +142,9 @@ export class AuthController {
         AUTH_MESSAGES.TOKEN_MISSING,
         AUTH_MESSAGES.INVALID_OR_EXPIRED_TOKEN,
         AUTH_MESSAGES.ORG_NOT_FOUND_BY_TOKEN,
+        AUTH_MESSAGES.ORG_ALREADY_VERIFIED,
+        AUTH_MESSAGES.USER_ALREADY_VERIFIED,
+        AUTH_MESSAGES.ACCOUNT_NOT_FOUND_BY_TOKEN
       ];
 
       // Business errors → 200
@@ -187,7 +193,7 @@ export class AuthController {
       // Known / business errors
       const safeErrors = [
         AUTH_MESSAGES.EMAIL_REQUIRED,
-        AUTH_MESSAGES.EMAIL_NOT_FOUND,
+        AUTH_MESSAGES.EMAIL_NOT_FOUND
       ];
 
       // Business errors → 200
@@ -236,7 +242,7 @@ export class AuthController {
       // Known / business errors
       const safeErrors = [
         AUTH_MESSAGES.EMAIL_REQUIRED,
-        AUTH_MESSAGES.ACCOUNT_NOT_FOUND,
+        AUTH_MESSAGES.ACCOUNT_NOT_FOUND
       ];
 
       // Business errors → 200
@@ -332,7 +338,7 @@ export class AuthController {
       const safeErrors = [
         AUTH_MESSAGES.EMAIL_REQUIRED,
         AUTH_MESSAGES.PASSWORD_REQUIRED,
-        AUTH_MESSAGES.EMAIL_NOT_FOUND,
+        AUTH_MESSAGES.EMAIL_NOT_FOUND
       ];
 
       // Business errors → 200

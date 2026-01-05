@@ -30,6 +30,9 @@ class AuthController {
                 auth_message_1.AUTH_MESSAGES.ROLE_NOT_FOUND,
                 auth_message_1.AUTH_MESSAGES.EMAIL_ALREADY_REGISTERED,
                 auth_message_1.AUTH_MESSAGES.INVALID_TYPE,
+                auth_message_1.AUTH_MESSAGES.EMAIL_ALREADY_USER,
+                auth_message_1.AUTH_MESSAGES.EMAIL_ALREADY_ORG,
+                auth_message_1.AUTH_MESSAGES.PUBLIC_EMAIL_MSG
             ];
             if (safeErrors.includes(err.message)) {
                 return res.status(200).json({
@@ -115,6 +118,9 @@ class AuthController {
                 auth_message_1.AUTH_MESSAGES.TOKEN_MISSING,
                 auth_message_1.AUTH_MESSAGES.INVALID_OR_EXPIRED_TOKEN,
                 auth_message_1.AUTH_MESSAGES.ORG_NOT_FOUND_BY_TOKEN,
+                auth_message_1.AUTH_MESSAGES.ORG_ALREADY_VERIFIED,
+                auth_message_1.AUTH_MESSAGES.USER_ALREADY_VERIFIED,
+                auth_message_1.AUTH_MESSAGES.ACCOUNT_NOT_FOUND_BY_TOKEN
             ];
             // Business errors → 200
             if (safeErrors.includes(err.message)) {
@@ -158,7 +164,7 @@ class AuthController {
             // Known / business errors
             const safeErrors = [
                 auth_message_1.AUTH_MESSAGES.EMAIL_REQUIRED,
-                auth_message_1.AUTH_MESSAGES.EMAIL_NOT_FOUND,
+                auth_message_1.AUTH_MESSAGES.EMAIL_NOT_FOUND
             ];
             // Business errors → 200
             if (safeErrors.includes(err.message)) {
@@ -202,7 +208,7 @@ class AuthController {
             // Known / business errors
             const safeErrors = [
                 auth_message_1.AUTH_MESSAGES.EMAIL_REQUIRED,
-                auth_message_1.AUTH_MESSAGES.ACCOUNT_NOT_FOUND,
+                auth_message_1.AUTH_MESSAGES.ACCOUNT_NOT_FOUND
             ];
             // Business errors → 200
             if (safeErrors.includes(err.message)) {
@@ -288,7 +294,7 @@ class AuthController {
             const safeErrors = [
                 auth_message_1.AUTH_MESSAGES.EMAIL_REQUIRED,
                 auth_message_1.AUTH_MESSAGES.PASSWORD_REQUIRED,
-                auth_message_1.AUTH_MESSAGES.EMAIL_NOT_FOUND,
+                auth_message_1.AUTH_MESSAGES.EMAIL_NOT_FOUND
             ];
             // Business errors → 200
             if (safeErrors.includes(err.message)) {

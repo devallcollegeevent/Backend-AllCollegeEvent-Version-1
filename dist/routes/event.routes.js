@@ -14,7 +14,7 @@ const router = (0, express_1.Router)();
  * @route GET /api/v1/organizations/:orgId/events
  * @desc  Get all events of a specific organization
  */
-router.get("/organizations/:orgId/events", authMiddleware_1.authMiddleware, (0, validate_1.validate)(event_validation_1.eventValidation.getAll), event_controller_1.EventController.getOrgEvents);
+router.get("/organizations/:orgId/events", (0, validate_1.validate)(event_validation_1.eventValidation.getAll), event_controller_1.EventController.getOrgEvents);
 /**
  * @route GET /api/v1/organizations/:orgId/events/:eventId
  * @desc  Get a single event under an organization

@@ -20,7 +20,8 @@ const path_1 = __importDefault(require("path"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 // enabling JSON body parsing
-app.use(express_1.default.json());
+app.use(express_1.default.json({ limit: "50mb" }));
+app.use(express_1.default.urlencoded({ limit: "50mb", extended: true }));
 // enabling cross-origin access for allowed domains
 app.use(cors({
     origin: [

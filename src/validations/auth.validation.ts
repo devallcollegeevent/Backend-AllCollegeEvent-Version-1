@@ -104,7 +104,7 @@ export const authValidation = {
   verifyOrg: {
     query: Joi.object({
       token: Joi.string().required(),
-    }),
+    }),   
   },
 
   /**

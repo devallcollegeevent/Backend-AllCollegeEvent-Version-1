@@ -10,42 +10,6 @@ import { generateSlug } from "../../utils/slug";
 import { EVENT_FULL_INCLUDE } from "./event.include";
 import { enrichEvents } from "./event.enricher";
 
-function validateLocation(mode: EventMode, location: any) {
-  // Normalize empty values
-  if (!location || typeof location !== "object") {
-    location = null;
-  }
-
-  if (mode === EventMode.ONLINE) {
-    if (!location?.onlineMeetLink) {
-      throw new Error(EVENT_MESSAGES.ONLINE_MEET_LINK_REQ);
-    }
-  }
-
-  if (mode === EventMode.OFFLINE) {
-    if (
-      !location?.country ||
-      !location?.state ||
-      !location?.city ||
-      !location?.mapLink
-    ) {
-      throw new Error(EVENT_MESSAGES.OFFLINE_VALIDATION);
-    }
-  }
-
-  if (mode === EventMode.HYBRID) {
-    if (
-      !location?.onlineMeetLink ||
-      !location?.country ||
-      !location?.state ||
-      !location?.city ||
-      !location?.mapLink
-    ) {
-      throw new Error(EVENT_MESSAGES.ONLINE_OFFLINE_VALIDATION);
-    }
-  }
-}
-
 function buildOrgSocialUpdate(socialLinks: any) {
   const data: any = {};
 
@@ -409,7 +373,12 @@ export class EventService {
 
   static async getAllEventsService() {
     const events = await prisma.event.findMany({
-      orderBy: { createdAt: "desc" },
+      where: {
+        status: "APPROVED", 
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
       include: EVENT_FULL_INCLUDE,
     });
 
@@ -523,15 +492,15 @@ export class EventService {
         });
       }
 
-      if (payload.certIdentities?.length) {
-        await tx.eventCertification.createMany({
-          data: payload.certIdentities.map((id: string) => ({
-            eventIdentity: eventId,
-            certIdentity: id,
-          })),
-          skipDuplicates: true,
-        });
-      }
+      // if (payload.certIdentities?.length) {
+      //   await tx.eventCertification.createMany({
+      //     data: payload.certIdentities.map((id: string) => ({
+      //       eventIdentity: eventId,
+      //       certIdentity: id,
+      //     })),
+      //     skipDuplicates: true,
+      //   });
+      // }
 
       if (payload.accommodationIdentities?.length) {
         await tx.eventAccommodation.createMany({

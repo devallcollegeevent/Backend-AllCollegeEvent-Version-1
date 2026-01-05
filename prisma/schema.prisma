@@ -182,7 +182,6 @@ model AceCertification {
 
   createdAt          DateTime             @default(now()) @map("created_at")
   updatedAt          DateTime             @updatedAt @map("updated_at")
-  EventCertification EventCertification[]
   Event              Event[]
 
   @@map("ace_certification")
@@ -300,7 +299,6 @@ model Event {
   userIdentity       String?
   User               User?                @relation(fields: [userIdentity], references: [identity])
   Collaborator       Collaborator[]
-  EventCertification EventCertification[]
 
   @@map("ace_event")
 }
@@ -424,20 +422,6 @@ model EventPerk {
 
   @@id([eventIdentity, perkIdentity])
   @@map("ace_event_perk")
-}
-
-model EventCertification {
-  eventIdentity String
-  certIdentity  String
-
-  event Event            @relation(fields: [eventIdentity], references: [identity])
-  cert  AceCertification @relation(fields: [certIdentity], references: [identity])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@id([eventIdentity, certIdentity])
-  @@map("ace_event_certification")
 }
 
 model EventAccommodation {
