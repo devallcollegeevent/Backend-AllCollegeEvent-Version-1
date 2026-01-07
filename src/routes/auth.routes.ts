@@ -3,6 +3,7 @@ import { AuthController } from "../controllers/auth.controller";
 import { validate } from "../utils/validate";
 import { authValidation } from "../validations/auth.validation";
 import upload from "../middlewares/fileUpload";
+import { authMiddleware } from "../middlewares/authMiddleware";
 
 const router = Router();
 
@@ -60,10 +61,11 @@ router.post("/reset-password",validate(authValidation.resetPassword), AuthContro
  */
 router.post("/google-login", validate(authValidation.googleLogin),AuthController.googleLoginController);
 
+
 /**
  * Update Profile User or Org
  */
-router.post("/update-profile",upload.single("profileImage"),AuthController.updateProfile)
+router.post("/update-profile",authMiddleware,upload.single("profileImage"),AuthController.updateProfile)
 
 
 export default router;

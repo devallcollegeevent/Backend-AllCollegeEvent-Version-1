@@ -151,27 +151,50 @@ class EventController {
      */
     static async updateEvent(req, res) {
         try {
-            // Extract route params
-            const { orgId, eventId } = req.params;
-            // Handle optional image upload
-            const image = req.file ? `/uploads/${req.file.filename}` : undefined;
-            // Update event
-            const result = await event_service_1.EventService.updateEvent(orgId, eventId, {
+            const { eventIdentity } = req.params;
+            if (!eventIdentity) {
+                return res.status(200).json({
+                    success: false,
+                    message: "Event identity required",
+                });
+            }
+            /* ---------- PARSE JSON FIELDS ---------- */
+            const existingBannerImages = req.body.existingBannerImages
+                ? JSON.parse(req.body.existingBannerImages)
+                : [];
+            const perkIdentities = req.body.perkIdentities
+                ? JSON.parse(req.body.perkIdentities)
+                : [];
+            const accommodationIdentities = req.body.accommodationIdentities
+                ? JSON.parse(req.body.accommodationIdentities)
+                : [];
+            const collaborators = req.body.collaborators
+                ? JSON.parse(req.body.collaborators)
+                : [];
+            /* ---------- UPLOAD NEW IMAGES ---------- */
+            const newBannerUrls = [];
+            if (req.files && Array.isArray(req.files)) {
+                for (const file of req.files) {
+                    const uploaded = await (0, s3Upload_1.uploadToS3)(file, "events");
+                    newBannerUrls.push(uploaded.url);
+                }
+            }
+            const payload = {
                 ...req.body,
-                ...(image && { bannerImage: image }),
-            });
-            // Success response
-            res.json({
-                status: true,
-                data: result,
-                message: event_message_1.EVENT_MESSAGES.EVENT_UPDATED,
-            });
+                existingBannerImages,
+                newBannerUrls,
+                perkIdentities,
+                accommodationIdentities,
+                collaborators,
+            };
+            const data = await event_service_1.EventService.updateEvent(eventIdentity, payload);
+            return res.json({ success: true, data });
         }
         catch (err) {
-            // Internal server error
-            res
-                .status(500)
-                .json({ status: false, message: event_message_1.EVENT_MESSAGES.INTERNAL_ERROR });
+            return res.status(400).json({
+                success: false,
+                message: err.message,
+            });
         }
     }
     /**

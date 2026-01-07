@@ -1,0 +1,65 @@
+[2026-01-07 12:41:52] [INFO] → Incoming → PUT /api/v1/events/29ea3a67-275f-4965-ab4c-32054d0e5788
+[2026-01-07 12:41:54] [ERROR] → Error → PUT /api/v1/events/29ea3a67-275f-4965-ab4c-32054d0e5788 | Message: 
+Invalid `tx.ticket.findUnique()` invocation in
+D:\Siva\Backend-AllCollegeEvent-Version-1\dist\services\event\event.service.js:312:54
+
+  309 /* ================= TICKETS ================= */
+  310 if (payload.tickets?.length) {
+  311     for (const ticket of payload.tickets) {
+→ 312         const existing = await tx.ticket.findUnique({
+                where: {
+                  identity: undefined,
+              ?   id?: Int,
+              ?   AND?: TicketWhereInput | TicketWhereInput[],
+              ?   OR?: TicketWhereInput[],
+              ?   NOT?: TicketWhereInput | TicketWhereInput[],
+              ?   eventIdentity?: StringFilter | String,
+              ?   name?: StringFilter | String,
+              ?   description?: StringNullableFilter | String | Null,
+              ?   sellingFrom?: DateTimeFilter | DateTime,
+              ?   sellingTo?: DateTimeFilter | DateTime,
+              ?   isPaid?: BoolFilter | Boolean,
+              ?   price?: FloatNullableFilter | Float | Null,
+              ?   totalQuantity?: IntFilter | Int,
+              ?   createdAt?: DateTimeFilter | DateTime,
+              ?   updatedAt?: DateTimeFilter | DateTime,
+              ?   event?: EventRelationFilter | EventWhereInput
+                }
+              })
+
+Argument `where` of type TicketWhereUniqueInput needs at least one of `identity` or `id` arguments. Available options are marked with ?.
+[2026-01-07 12:46:58] [INFO] → Incoming → PUT /api/v1/events/29ea3a67-275f-4965-ab4c-32054d0e5788
+[2026-01-07 12:46:59] [ERROR] → Error → PUT /api/v1/events/29ea3a67-275f-4965-ab4c-32054d0e5788 | Message: 
+Invalid `tx.collaboratorMember.update()` invocation in
+D:\Siva\Backend-AllCollegeEvent-Version-1\dist\services\event\event.service.js:333:45
+
+  330 }
+  331 /* ================= COLLABORATORS ================= */
+  332 for (const collab of payload.collaborators) {
+→ 333     await tx.collaboratorMember.update(
+An operation failed because it depends on one or more records that were required but not found. Record to update not found.
+[2026-01-07 12:47:58] [INFO] → Incoming → PUT /api/v1/events/29ea3a67-275f-4965-ab4c-32054d0e5788
+[2026-01-07 12:48:53] [INFO] → Incoming → PUT /api/v1/events/29ea3a67-275f-4965-ab4c-32054d0e5788
+[2026-01-07 12:50:07] [INFO] → Incoming → GET /api/v1/organizations/35a6560f-503d-4039-8558-ddf82071898a/events/29ea3a67-275f-4965-ab4c-32054d0e5788
+[2026-01-07 12:51:44] [INFO] → Incoming → PUT /api/v1/events/29ea3a67-275f-4965-ab4c-32054d0e5788
+[2026-01-07 12:52:09] [INFO] → Incoming → PUT /api/v1/events/29ea3a67-275f-4965-ab4c-32054d0e5788
+[2026-01-07 12:53:10] [INFO] → Incoming → PUT /api/v1/events/29ea3a67-275f-4965-ab4c-32054d0e5788
+[2026-01-07 12:56:35] [INFO] → Incoming → PUT /api/v1/events/29ea3a67-275f-4965-ab4c-32054d0e5788
+[2026-01-07 13:05:05] [INFO] → Incoming → PUT /api/v1/events/29ea3a67-275f-4965-ab4c-32054d0e5788
+[2026-01-07 13:06:47] [INFO] → Incoming → PUT /api/v1/events/29ea3a67-275f-4965-ab4c-32054d0e5788
+[2026-01-07 13:06:49] [ERROR] → Error → PUT /api/v1/events/29ea3a67-275f-4965-ab4c-32054d0e5788 | Message: 
+Invalid `tx.eventAccommodation.createMany()` invocation in
+D:\Siva\Backend-AllCollegeEvent-Version-1\dist\services\event\event.service.js:301:49
+
+  298     where: { eventIdentity },
+  299 });
+  300 if (payload.accommodationIdentities.length) {
+→ 301     await tx.eventAccommodation.createMany(
+Foreign key constraint violated: `ace_event_accommodation_accommodationIdentity_fkey (index)`
+[2026-01-07 13:11:14] [INFO] → Incoming → PUT /api/v1/events/29ea3a67-275f-4965-ab4c-32054d0e5788
+[2026-01-07 13:51:03] [INFO] → Incoming → PUT /api/v1/events/29ea3a67-275f-4965-ab4c-32054d0e5788
+[2026-01-07 13:54:55] [INFO] → Incoming → PUT /api/v1/events/29ea3a67-275f-4965-ab4c-32054d0e5788
+[2026-01-07 14:09:49] [INFO] → Incoming → PUT /api/v1/events/29ea3a67-275f-4965-ab4c-32054d0e5788
+[2026-01-07 14:13:18] [INFO] → Incoming → PUT /api/v1/events/29ea3a67-275f-4965-ab4c-32054d0e5788
+[2026-01-07 14:13:46] [INFO] → Incoming → PUT /api/v1/events/29ea3a67-275f-4965-ab4c-32054d0e5788
+[2026-01-07 14:14:20] [INFO] → Incoming → PUT /api/v1/events/29ea3a67-275f-4965-ab4c-32054d0e5788

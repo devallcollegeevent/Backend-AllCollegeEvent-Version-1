@@ -49,7 +49,6 @@ model User {
   updatedAt DateTime @updatedAt
 
   otps          OTP[]
-  events        Event[]
   SocialAccount SocialAccount[]
 
   @@map("ace_user")
@@ -65,7 +64,7 @@ model Org {
   organizationName     String
   organizationCategory String
   city                 String
-  state                 String
+  state                String
   country              String
   profileImage         String?
 
@@ -90,7 +89,7 @@ model Org {
   events       Event[]
   Collaborator Collaborator[]
 
-  socialLinks  OrgSocialLink[]  
+  socialLinks OrgSocialLink[]
 
   @@map("ace_org")
 }
@@ -99,7 +98,7 @@ model OrgSocialLink {
   identity String @id @default(uuid())
 
   orgIdentity String
-  platform    String   // facebook, instagram, youtube, x, telegram, whatsapp
+  platform    String // facebook, instagram, youtube, x, telegram, whatsapp
   url         String
 
   org Org @relation(fields: [orgIdentity], references: [identity], onDelete: Cascade)
@@ -195,9 +194,9 @@ model AceCertification {
 
   certName String @unique @map("cert_name")
 
-  createdAt          DateTime             @default(now()) @map("created_at")
-  updatedAt          DateTime             @updatedAt @map("updated_at")
-  Event              Event[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  Event     Event[]
 
   @@map("ace_certification")
 }
@@ -250,8 +249,8 @@ model OrgCategory {
 
   categoryName String @unique @map("category_name")
 
-  createdAt          DateTime             @default(now()) @map("created_at")
-  updatedAt          DateTime             @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("ace_org_category")
 }
@@ -310,9 +309,7 @@ model Event {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  userIdentity       String?
-  User               User?                @relation(fields: [userIdentity], references: [identity])
-  Collaborator       Collaborator[]
+  Collaborator Collaborator[]
 
   @@map("ace_event")
 }
@@ -330,6 +327,7 @@ model EventLocation {
   country String?
   state   String?
   city    String?
+  venue   String?
   mapLink String?
 
   createdAt DateTime @default(now())
@@ -343,7 +341,7 @@ model CollaboratorMember {
   id       Int    @unique @default(autoincrement())
 
   organizerNumber  String
-  hostIdentity     String?   // just a value, NO relation
+  hostIdentity     String? // just a value, NO relation
   organizerName    String?
   organizationName String?
   orgDept          String?
@@ -356,7 +354,6 @@ model CollaboratorMember {
 
   @@map("ace_collaborator_members")
 }
-
 
 model Collaborator {
   identity String @id @default(uuid())

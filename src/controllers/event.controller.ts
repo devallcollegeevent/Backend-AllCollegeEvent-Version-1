@@ -174,29 +174,59 @@ export class EventController {
    */
   static async updateEvent(req: Request, res: Response) {
     try {
-      // Extract route params
-      const { orgId, eventId } = req.params;
+      const { eventIdentity } = req.params;
 
-      // Handle optional image upload
-      const image = req.file ? `/uploads/${req.file.filename}` : undefined;
+      if (!eventIdentity) {
+        return res.status(200).json({
+          success: false,
+          message: EVENT_MESSAGES.EVENT_ID_REQUIRED,
+        });
+      }
 
-      // Update event
-      const result = await EventService.updateEvent(orgId, eventId, {
+      /* ---------- PARSE JSON FIELDS ---------- */
+      const existingBannerImages = req.body.existingBannerImages
+        ? JSON.parse(req.body.existingBannerImages)
+        : [];
+
+      const perkIdentities = req.body.perkIdentities
+        ? JSON.parse(req.body.perkIdentities)
+        : [];
+
+      const accommodationIdentities = req.body.accommodationIdentities
+        ? JSON.parse(req.body.accommodationIdentities)
+        : [];
+
+      const collaborators = req.body.collaborators
+        ? JSON.parse(req.body.collaborators)
+        : [];
+
+      /* ---------- UPLOAD NEW IMAGES ---------- */
+      const newBannerUrls: string[] = [];
+
+      if (req.files && Array.isArray(req.files)) {
+        for (const file of req.files) {
+          const uploaded = await uploadToS3(file, "events");
+          newBannerUrls.push(uploaded.url);
+        }
+      }
+
+      const payload = {
         ...req.body,
-        ...(image && { bannerImage: image }),
-      });
+        existingBannerImages,
+        newBannerUrls,
+        perkIdentities,
+        accommodationIdentities,
+        collaborators,
+      };
 
-      // Success response
-      res.json({
-        status: true,
-        data: result,
-        message: EVENT_MESSAGES.EVENT_UPDATED,
+      const data = await EventService.updateEvent(eventIdentity, payload);
+
+      return res.status(200).json({ success: true, data });
+    } catch (err: any) {
+      return res.status(500).json({
+        success: false,
+        message: err.message,
       });
-    } catch (err) {
-      // Internal server error
-      res
-        .status(500)
-        .json({ status: false, message: EVENT_MESSAGES.INTERNAL_ERROR });
     }
   }
 

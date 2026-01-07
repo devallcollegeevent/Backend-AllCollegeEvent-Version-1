@@ -479,7 +479,7 @@ export class AuthService {
    * Google OAuth login
    */
   static async googleLogin(googleToken: string) {
-    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+    const client = new OAuth2Client();
 
     const ticket = await client.verifyIdToken({
       idToken: googleToken,

@@ -42,13 +42,13 @@ router.post(
  * @route PUT /api/v1/organizations/:orgId/events/:eventId
  * @desc  Update an event (with optional image upload)
  */
+// routes/event.route.ts
 router.put(
-  "/organizations/:orgId/events/:eventId",
-  authMiddleware,
-  validate(eventValidation.update),
-  upload.single("image"),
+  "/events/:eventIdentity",
+  upload.array("bannerImages",5), // multer
   EventController.updateEvent
 );
+
 
 /**
  * @route DELETE /api/v1/organizations/:orgId/events/:eventId

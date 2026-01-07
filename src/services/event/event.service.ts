@@ -110,6 +110,7 @@ export class EventService {
             state: payload.location.state ?? null,
             city: payload.location.city ?? null,
             mapLink: payload.location.mapLink ?? null,
+            venue: payload.location.venue ?? null,
           },
         });
       }
@@ -303,21 +304,101 @@ export class EventService {
     };
   }
 
-  static async updateEvent(orgId: string, eventId: string, data: any) {
-    // updating event record based on event id and organization id
-    return prisma.event.update({
-      where: { identity: eventId, orgIdentity: orgId },
-      data: {
-        title: data.event_title,
-        description: data.description,
-        bannerImage: data.bannerImage ?? undefined,
-        venueName: data.venueName ?? undefined,
-        mode: data.mode,
-        eventDate: data.event_date,
-        eventTime: data.event_time,
-        venue: data.venue,
-        updatedAt: new Date(), // updating last modified timestamp
-      },
+  static async updateEvent(eventIdentity: string, payload: any) {
+    return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+      /* ================= EVENT CORE ================= */
+      const finalBannerImages = [
+        ...payload.existingBannerImages,
+        ...payload.newBannerUrls,
+      ];
+
+      await tx.event.update({
+        where: { identity: eventIdentity },
+        data: {
+          description: payload.description,
+          offers: payload.offers,
+          certIdentity: payload.certIdentity,
+          socialLinks: payload.socialLinks
+            ? JSON.parse(payload.socialLinks)
+            : undefined,
+          bannerImages: finalBannerImages,
+        },
+      });
+
+      /* ================= PERKS ================= */
+      if (payload.perkIdentities) {
+        await tx.eventPerk.deleteMany({ where: { eventIdentity } });
+
+        if (payload.perkIdentities.length) {
+          await tx.eventPerk.createMany({
+            data: payload.perkIdentities.map((perkId: string) => ({
+              eventIdentity,
+              perkIdentity: perkId,
+            })),
+          });
+        }
+      }
+
+      /* ================= ACCOMMODATIONS ================= */
+      if (payload.accommodationIdentities) {
+        await tx.eventAccommodation.deleteMany({
+          where: { eventIdentity },
+        });
+
+        if (payload.accommodationIdentities.length) {
+          await tx.eventAccommodation.createMany({
+            data: payload.accommodationIdentities.map((accId: string) => ({
+              eventIdentity,
+              accommodationIdentity: accId,
+            })),
+          });
+        }
+      }
+
+      /* ================= TICKETS ================= */
+
+      let tickets = payload.tickets;
+
+      if (typeof tickets === "string") {
+        tickets = JSON.parse(tickets);
+      }
+      if (tickets?.length) {
+        for (const ticket of tickets) {
+          if (!ticket.identity) {
+            continue; // skip invalid ticket update
+          }
+
+          const existing = await tx.ticket.findUnique({
+            where: { identity: ticket.identity },
+          });
+
+          if (!existing) continue;
+
+          const sellingStarted = new Date() >= existing.sellingFrom;
+
+          await tx.ticket.update({
+            where: { identity: ticket.identity },
+            data: {
+              name: ticket.name,
+              sellingFrom: sellingStarted ? undefined : ticket.sellingFrom,
+              sellingTo: ticket.sellingTo,
+            },
+          });
+        }
+      }
+
+      /* ================= COLLABORATORS ================= */
+      for (const collab of payload.collaborators) {
+        await tx.collaboratorMember.update({
+          where: { identity: collab.collaboratorMemberId },
+          data: {
+            organizationName: collab.organizationName,
+            organizerNumber: collab.organizerNumber,
+          },
+        });
+      }
+
+      return { eventIdentity };
     });
   }
 

@@ -397,7 +397,7 @@ class AuthService {
      * Google OAuth login
      */
     static async googleLogin(googleToken) {
-        const client = new google_auth_library_1.OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+        const client = new google_auth_library_1.OAuth2Client();
         const ticket = await client.verifyIdToken({
             idToken: googleToken,
             audience: process.env.GOOGLE_CLIENT_ID,

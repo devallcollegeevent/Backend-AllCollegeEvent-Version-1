@@ -29,7 +29,9 @@ router.post("/organizations/:orgId/events", fileUpload_1.default.array("bannerIm
  * @route PUT /api/v1/organizations/:orgId/events/:eventId
  * @desc  Update an event (with optional image upload)
  */
-router.put("/organizations/:orgId/events/:eventId", authMiddleware_1.authMiddleware, (0, validate_1.validate)(event_validation_1.eventValidation.update), fileUpload_1.default.single("image"), event_controller_1.EventController.updateEvent);
+// routes/event.route.ts
+router.put("/events/:eventIdentity", fileUpload_1.default.array("bannerImages", 5), // multer
+event_controller_1.EventController.updateEvent);
 /**
  * @route DELETE /api/v1/organizations/:orgId/events/:eventId
  * @desc  Delete an event
